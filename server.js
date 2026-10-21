@@ -67,10 +67,11 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/export', exportRoutes);
 
 // Front-end SPA routing (serves React App for all browser navigation routes)
-app.get('*', (req, res, next) => {
+app.get(/^(?!\/api(?:\/|$)).*/, (req, res, next) => {
   if (req.path.startsWith('/api')) {
     return next();
   }
+
   if (fs.existsSync(path.join(distPath, 'index.html'))) {
     res.sendFile(path.join(distPath, 'index.html'));
   } else {
