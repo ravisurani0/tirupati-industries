@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tirupati Industries - Workshop Employee & Payroll Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <!-- Mobile Sidebar Overlay Backdrop -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="appSidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">TI</div>
+        <div class="brand-text">
+          <h2 id="brandWorkshopTitle">TIRUPATI</h2>
+          <p id="brandWorkshopSub">Industries • Rajkot</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="/dashboard" class="nav-link active" data-tab="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="/employees" class="nav-link" data-tab="employees">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span>Employees</span>
+        </a>
+        <a href="/attendance" class="nav-link" data-tab="attendance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <span>Attendance & Days</span>
+        </a>
+        <a href="/advances" class="nav-link" data-tab="advances">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <span>Advance Salary</span>
+        </a>
+        <a href="/payroll" class="nav-link" data-tab="payroll">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+            <polyline points="10 9 9 9 8 9" />
+          </svg>
+          <span>Payroll & Salary</span>
+        </a>
+        <a href="/reports" class="nav-link" data-tab="reports">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Reports & Export</span>
+        </a>
+        <a href="/settings" class="nav-link" id="navOpenAdminSettings" style="cursor: pointer;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span>Admin Settings</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="admin-info" id="adminInfoTrigger" title="Click to edit admin details & password">
+          <div class="admin-avatar" id="adminAvatar">AD</div>
+          <div class="admin-meta">
+            <div class="admin-name" id="adminDisplayName">Admin</div>
+            <div class="admin-role" id="adminWorkshopRole">Workshop Manager</div>
+          </div>
+        </div>
+        <button class="btn-logout" id="btnLogout" title="Sign out">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Sticky Header -->
+      <header class="top-header">
+        <div style="display: flex; align-items: center;">
+          <button class="btn-sidebar-toggle" id="btnSidebarToggle" aria-label="Toggle Navigation">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <div class="page-title">
+            <h1 id="topSectionTitle">Workshop Dashboard</h1>
+            <p id="topSectionSubtitle">Real-time overview of staff, wages, advances & monthly payroll</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="workshop-badge">
+            <span class="live-indicator"></span>
+            <span id="headerWorkshopBadge">Tirupati Industries</span>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btnTopAdminSettings" title="Admin Settings & Password">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            <span>Admin Settings</span>
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnRefreshData" title="Refresh data">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+            </svg>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Body -->
+      <div class="content-body">
+
+        <!-- ========================================================
+             TAB 1: DASHBOARD ("SIMPLE BOARD")
+             ======================================================== -->
+        <section id="tab-dashboard" class="tab-pane active">
+          <!-- KPI Statistics Grid -->
+          <div class="stats-grid">
+            <div class="stat-card primary">
+              <div class="stat-info">
+                <p>Active Staff</p>
+                <h3 id="dashActiveStaff">0</h3>
+                <div class="sub-stat" id="dashStaffBreakdown">0 Fixed • 0 Hourly</div>
+              </div>
+              <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="stat-card success">
+              <div class="stat-info">
+                <p>Today's Present</p>
+                <h3 id="dashTodayPresent">0</h3>
+                <div class="sub-stat" id="dashTodayAttStatus">0 Half-Day • 0 Absent</div>
+              </div>
+              <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="stat-card amber">
+              <div class="stat-info">
+                <p>Advances Disbursed</p>
+                <h3 id="dashAdvancesTotal">₹0</h3>
+                <div class="sub-stat" id="dashAdvancesMonth">This Month: ₹0</div>
+              </div>
+              <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="stat-card danger">
+              <div class="stat-info">
+                <p>Remaining Salary</p>
+                <h3 id="dashRemainingSalary">₹0</h3>
+                <div class="sub-stat" id="dashPayrollNet">Gross: ₹0 • Net: ₹0</div>
+              </div>
+              <div class="stat-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+
+
+          <!-- Two Column Grid for Live Panels -->
+          <div class="dashboard-columns">
+            <!-- Left: Today's Attendance Overview -->
+            <div class="card">
+              <div class="card-header">
+                <h3>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  <span>Today's Attendance Status</span>
+                </h3>
+                <div class="header-controls">
+                  <span id="dashTodayDateBadge" class="badge badge-neutral">Today</span>
+                  <button class="btn btn-outline btn-sm" id="btnGoToAttendance">Manage</button>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="app-table">
+                    <thead>
+                      <tr>
+                        <th>Employee</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Hours / Shift</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashTodayAttendanceTable">
+                      <tr>
+                        <td colspan="4" style="text-align: center; color: #94a3b8; padding: 20px;">Loading today's
+                          attendance...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Recent Advances Ledger -->
+            <div class="card">
+              <div class="card-header">
+                <h3>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                  <span>Recent Worker Advances</span>
+                </h3>
+                <button class="btn btn-outline btn-sm" id="btnGoToAdvances">View All</button>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="app-table">
+                    <thead>
+                      <tr>
+                        <th>Employee</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Unsettled</th>
+                      </tr>
+                    </thead>
+                    <tbody id="dashRecentAdvancesTable">
+                      <tr>
+                        <td colspan="4" style="text-align: center; color: #94a3b8; padding: 20px;">Loading recent
+                          advances...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================================
+             TAB 2: EMPLOYEES MANAGEMENT
+             ======================================================== -->
+        <section id="tab-employees" class="tab-pane">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <input type="text" id="empSearchInput" class="form-control search-input"
+                placeholder="Search by name, role or phone...">
+              <select id="empFilterType" class="form-select">
+                <option value="all">All Wage Types</option>
+                <option value="fixed">Fixed Salary</option>
+                <option value="hourly">Hourly Based</option>
+              </select>
+              <select id="empFilterStatus" class="form-select">
+                <option value="all">All Status</option>
+                <option value="active" selected>Active Staff</option>
+                <option value="inactive">Inactive Staff</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" id="btnOpenAddEmpModal">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+              <span> Add New Employee</span>
+            </button>
+          </div>
+
+          <div class="card">
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="app-table">
+                  <thead>
+                    <tr>
+                      <th>Employee Name</th>
+                      <th>Designation / Skill</th>
+                      <th>Wage Type</th>
+                      <th>Base Rate / Salary</th>
+                      <th>Std Shift</th>
+                      <th>Unsettled Advance</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="employeesTableBody">
+                    <tr>
+                      <td colspan="8" style="text-align: center; color: #94a3b8; padding: 30px;">Loading workshop
+                        employees...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================================
+             TAB 3: ATTENDANCE & WORKING DAYS / HOURS
+             ======================================================== -->
+        <section id="tab-attendance" class="tab-pane">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <button class="btn btn-outline btn-sm" id="btnAttPrevDay">◀ Prev Day</button>
+              <input type="date" id="attendanceDatePicker" class="form-control" style="font-weight: 600;">
+              <button class="btn btn-outline btn-sm" id="btnAttNextDay">Next Day ▶</button>
+              <button class="btn btn-outline btn-sm" id="btnAttToday">Today</button>
+            </div>
+
+            <div class="filter-group">
+              <button class="btn btn-outline btn-sm" id="btnMarkAllPresent">Quick Set: All Present</button>
+              <button class="btn btn-primary" id="btnSaveAttendance">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                  <polyline points="7 3 7 8 15 8" />
+                </svg>
+                <span>Save Attendance Log</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                  <line x1="16" y1="2" x2="16" y2="6" />
+                  <line x1="8" y1="2" x2="8" y2="6" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <span>Daily Log Sheet for <span id="attCurrentDateLabel" style="color: var(--primary);"></span></span>
+              </h3>
+              <span class="badge badge-neutral" id="attCounterBadge">0 Staff</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="app-table">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Wage Type</th>
+                      <th>Attendance Status</th>
+                      <th>Hours Worked (Hourly)</th>
+                      <th>Overtime (Hrs)</th>
+                      <th>Shift Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attendanceGridBody">
+                    <tr>
+                      <td colspan="6" style="text-align: center; color: #94a3b8; padding: 30px;">Loading daily
+                        attendance sheet...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monthly Working Days Summary Section -->
+          <div class="card" style="margin-top: 24px;">
+            <div class="card-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                </svg>
+                <span>Monthly Attendance & Working Days Summary</span>
+              </h3>
+              <div class="header-controls">
+                <input type="month" id="attSummaryMonthPicker" class="form-control"
+                  style="font-size: 12px; padding: 4px 8px;">
+                <button class="btn btn-outline btn-sm" id="btnRefreshAttSummary">Calculate Summary</button>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="app-table">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Type</th>
+                      <th>Present Days</th>
+                      <th>Half Days</th>
+                      <th>Absent Days</th>
+                      <th>Paid Leaves</th>
+                      <th>Total Working Days</th>
+                      <th>Total Hours Worked</th>
+                    </tr>
+                  </thead>
+                  <tbody id="monthlyAttSummaryBody">
+                    <tr>
+                      <td colspan="8" style="text-align: center; color: #94a3b8; padding: 20px;">Select month to view
+                        cumulative working days...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================================
+             TAB 4: ADVANCE SALARY MANAGEMENT
+             ======================================================== -->
+        <section id="tab-advances" class="tab-pane">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <input type="text" id="advSearchInput" class="form-control search-input"
+                placeholder="Search by employee name or reason...">
+              <select id="advFilterStatus" class="form-select">
+                <option value="all">All Settlement Status</option>
+                <option value="unsettled" selected>Unsettled (Active Advances)</option>
+                <option value="settled">Fully Settled in Payroll</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <button class="btn btn-outline btn-sm" id="btnExportAdvancesCSV">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Export CSV</span>
+              </button>
+              <button class="btn btn-primary" id="btnOpenIssueAdvanceModal">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span>Issue Advance</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Advance KPI summary -->
+          <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
+            <div class="stat-card amber">
+              <div class="stat-info">
+                <p>Outstanding Advances</p>
+                <h3 id="advKpiUnsettled">₹0</h3>
+                <div class="sub-stat">Total cash advance awaiting salary deduction</div>
+              </div>
+            </div>
+            <div class="stat-card primary">
+              <div class="stat-info">
+                <p>Advances This Month</p>
+                <h3 id="advKpiMonth">₹0</h3>
+                <div class="sub-stat">Issued in selected period</div>
+              </div>
+            </div>
+            <div class="stat-card success">
+              <div class="stat-info">
+                <p>Total Cumulative Advances</p>
+                <h3 id="advKpiTotal">₹0</h3>
+                <div class="sub-stat">All-time workshop advance history</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <span>Employee Advances Ledger</span>
+              </h3>
+              <span class="badge badge-neutral" id="advCountBadge">0 Records</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="app-table">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Date</th>
+                      <th>Amount Taken</th>
+                      <th>Settled in Payroll</th>
+                      <th>Remaining Unsettled</th>
+                      <th>Reason / Note</th>
+                      <th>Disbursement</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="advancesTableBody">
+                    <tr>
+                      <td colspan="9" style="text-align: center; color: #94a3b8; padding: 30px;">Loading advance salary
+                        records...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================================
+             TAB 5: MONTHLY PAYROLL & REMAINING SALARY
+             ======================================================== -->
+        <section id="tab-payroll" class="tab-pane">
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="payrollMonthPicker" style="font-size: 13px; font-weight: 600; color: #475569;">Select
+                Month:</label>
+              <input type="month" id="payrollMonthPicker" class="form-control" style="font-weight: 700; width: 180px;">
+              <button class="btn btn-outline btn-sm" id="btnRecalculatePayroll">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+                <span>Refresh Live Calculation</span>
+              </button>
+            </div>
+            <div class="filter-group">
+              <button class="btn btn-outline btn-sm" id="btnExportPayrollCSV">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Export Month CSV</span>
+              </button>
+              <button class="btn btn-primary" id="btnSaveAllPayroll">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                  <polyline points="17 21 17 13 7 13 7 21" />
+                </svg>
+                <span>Save / Lock Payroll</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Monthly Aggregated Totals Banner -->
+          <div class="payroll-summary-banner">
+            <div class="summary-item">
+              <div class="label">Gross Earned Wages</div>
+              <div class="value" id="payBannerGross">₹0</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">Advance Deductions</div>
+              <div class="value" id="payBannerAdvances" style="color: #d97706;">₹0</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">Bonus & Incentives</div>
+              <div class="value" id="payBannerBonus" style="color: #2563eb;">₹0</div>
+            </div>
+            <div class="summary-item net">
+              <div class="label">Net Payable Salary</div>
+              <div class="value" id="payBannerNet">₹0</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">Salary Paid So Far</div>
+              <div class="value" id="payBannerPaid">₹0</div>
+            </div>
+            <div class="summary-item remaining">
+              <div class="label">🚨 Remaining Salary to Pay</div>
+              <div class="value" id="payBannerRemaining">₹0</div>
+            </div>
+          </div>
+
+          <!-- Payroll Calculation Grid -->
+          <div class="card">
+            <div class="card-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                <span>Salary Settlement & Report for <span id="payrollTargetMonthLabel"
+                    style="color: var(--primary);"></span></span>
+              </h3>
+              <div class="header-controls">
+                <span class="badge badge-neutral" id="payrollStatusBadge">Live Calculated</span>
+              </div>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="app-table">
+                  <thead>
+                    <tr>
+                      <th>Employee</th>
+                      <th>Type & Base Rate</th>
+                      <th>Working Days / Hours</th>
+                      <th>Gross Pay (₹)</th>
+                      <th>Advance Deducted (₹)</th>
+                      <th>Bonus / OT (₹)</th>
+                      <th>Net Payable (₹)</th>
+                      <th>Paid Amount (₹)</th>
+                      <th>Remaining Salary (₹)</th>
+                      <th>Status</th>
+                      <th style="text-align: right;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="payrollTableBody">
+                    <tr>
+                      <td colspan="11" style="text-align: center; color: #94a3b8; padding: 30px;">Calculating monthly
+                        payroll...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================================
+             TAB 6: REPORTS & EXPORT
+             ======================================================== -->
+        <section id="tab-reports" class="tab-pane">
+          <div class="card">
+            <div class="card-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="20" x2="18" y2="10" />
+                  <line x1="12" y1="20" x2="12" y2="4" />
+                  <line x1="6" y1="20" x2="6" y2="14" />
+                </svg>
+                <span>Downloadable Workshop Audit Reports</span>
+              </h3>
+            </div>
+            <div class="card-body">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <!-- Card 1: Monthly Payroll CSV -->
+                <div
+                  style="border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; background: #ffffff;">
+                  <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">Monthly Payroll Sheet (CSV)</h4>
+                  <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">
+                    Full breakdown of each worker's base salary, working days/hours, gross wages, advance deductions,
+                    and remaining salary.
+                  </p>
+                  <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="month" id="reportPayrollMonth" class="form-control" style="font-size: 12px;">
+                    <button class="btn btn-primary btn-sm" id="btnDownloadPayrollReport">Download CSV</button>
+                  </div>
+                </div>
+
+                <!-- Card 2: Advance Salary Ledger CSV -->
+                <div
+                  style="border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; background: #ffffff;">
+                  <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 6px;">Advance Salary Ledger (CSV)</h4>
+                  <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">
+                    Comprehensive list of all advances given, reason, settlement progress, and current unsettled
+                    balance.
+                  </p>
+                  <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="reportAdvanceFilter" class="form-select" style="font-size: 12px;">
+                      <option value="all">All Advances</option>
+                      <option value="unsettled">Unsettled Only</option>
+                      <option value="settled">Settled Only</option>
+                    </select>
+                    <button class="btn btn-amber btn-sm" id="btnDownloadAdvanceReport">Download CSV</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+
+  <!-- ========================================================
+       MODALS
+       ======================================================== -->
+
+  <!-- 1. Add / Edit Employee Modal (Multi-Step Form) -->
+  <div class="modal-overlay" id="modalEmployee">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalEmpTitle">Add New Workshop Employee</h3>
+        <button class="modal-close" data-close="modalEmployee">&times;</button>
+      </div>
+
+      <!-- Step Wizard Indicator -->
+      <div class="step-wizard" id="empStepWizard">
+        <div class="step-indicator active" data-wizard="emp" data-step-target="1">
+          <span class="step-num">1</span>
+          <span>Personal & Role</span>
+        </div>
+        <div class="step-indicator" data-wizard="emp" data-step-target="2">
+          <span class="step-num">2</span>
+          <span>Wage & Shifts</span>
+        </div>
+        <div class="step-indicator" data-wizard="emp" data-step-target="3">
+          <span class="step-num">3</span>
+          <span>Payment & Notes</span>
+        </div>
+      </div>
+
+      <form id="formEmployee" novalidate>
+        <input type="hidden" id="empId" value="">
+        <div class="modal-body">
+          <!-- Step 1: Personal & Role Details -->
+          <div class="step-pane active" id="empStep1">
+            <div class="form-group">
+              <label for="empName">Full Name *</label>
+              <input type="text" id="empName" class="form-control" placeholder="e.g. Ramesh Patel" required>
+            </div>
+            <div class="form-group">
+              <label for="empPhone">Phone Number</label>
+              <input type="text" id="empPhone" class="form-control" placeholder="e.g. 98250 12345">
+            </div>
+            <div class="form-group">
+              <label for="empDesignation">Role / Designation *</label>
+              <input type="text" id="empDesignation" class="form-control"
+                placeholder="e.g. Lathe Master, Welder, Helper" required list="rolesList">
+              <datalist id="rolesList">
+                <option value="Lathe Machine Master">
+                <option value="CNC Operator">
+                <option value="VMC Programmer & Operator">
+                <option value="MIG/TIG Welder">
+                <option value="Milling & Shaper Operator">
+                <option value="Workshop Helper">
+                <option value="Production Supervisor">
+                <option value="Quality Checker">
+              </datalist>
+            </div>
+            <div class="form-group">
+              <label for="empJoiningDate">Joining Date</label>
+              <input type="date" id="empJoiningDate" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="empStatus">Employment Status</label>
+              <select id="empStatus" class="form-select">
+                <option value="active">Active Staff</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 2: Wage & Working Hours Structure -->
+          <div class="step-pane" id="empStep2">
+            <div class="form-group">
+              <label for="empType">Employment Wage Type *</label>
+              <select id="empType" class="form-select" required>
+                <option value="fixed">Fixed Monthly Salary (Working Days Based)</option>
+                <option value="hourly">Hourly Based (Working Hours Based)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="empSalary" id="empSalaryLabel">Monthly Base Salary (₹) *</label>
+              <input type="number" step="0.01" id="empSalary" class="form-control" placeholder="e.g. 22000" required>
+              <div class="hint" id="empSalaryHint">Monthly salary calculated against working days.</div>
+            </div>
+            <div class="form-group">
+              <label for="empStandardHours">Daily Standard Shift (Hours)</label>
+              <input type="number" step="0.5" id="empStandardHours" class="form-control" value="8.0" min="1" max="24">
+              <div class="hint">Standard daily shift duration (default 8 hrs).</div>
+            </div>
+          </div>
+
+          <!-- Step 3: Payment Method & Notes -->
+          <div class="step-pane" id="empStep3">
+            <div class="form-group">
+              <label for="empPaymentMode">Preferred Payment Mode</label>
+              <select id="empPaymentMode" class="form-select">
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI (Google Pay / PhonePe / Paytm)</option>
+                <option value="Bank Transfer">Bank Transfer (NEFT/IMPS)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="empBankDetails">Bank / UPI Details</label>
+              <input type="text" id="empBankDetails" class="form-control" placeholder="A/C No, IFSC or UPI ID">
+            </div>
+            <div class="form-group">
+              <label for="empNotes">Additional Notes / Description</label>
+              <textarea id="empNotes" class="form-control" rows="3"
+                placeholder="Skills, emergency contact, machine assigned, description..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="step-nav-left">
+            <button type="button" class="btn btn-outline" id="btnEmpPrevStep" style="display: none;">◀ Back</button>
+            <button type="button" class="btn btn-primary" id="btnEmpNextStep">Next: Wage & Shifts ▶</button>
+          </div>
+          <div class="step-nav-right">
+            <button type="button" class="btn btn-outline" data-close="modalEmployee">Close</button>
+            <button type="button" class="btn btn-success" id="btnUpdateEmployee">Update</button>
+            <button type="submit" class="btn btn-primary" id="btnSaveEmployee">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 2. Issue Advance Modal (Multi-Step Form) -->
+  <div class="modal-overlay" id="modalAdvance">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalAdvTitle">Issue Salary Advance</h3>
+        <button class="modal-close" data-close="modalAdvance">&times;</button>
+      </div>
+
+      <!-- Step Wizard Indicator -->
+      <div class="step-wizard" id="advStepWizard">
+        <div class="step-indicator active" data-wizard="adv" data-step-target="1">
+          <span class="step-num">1</span>
+          <span>Worker & Amount</span>
+        </div>
+        <div class="step-indicator" data-wizard="adv" data-step-target="2">
+          <span class="step-num">2</span>
+          <span>Mode & Reason</span>
+        </div>
+      </div>
+
+      <form id="formAdvance" novalidate>
+        <input type="hidden" id="advId" value="">
+        <div class="modal-body">
+          <!-- Step 1: Worker & Amount -->
+          <div class="step-pane active" id="advStep1">
+            <div class="form-group">
+              <label for="advEmployeeSelect">Select Employee *</label>
+              <select id="advEmployeeSelect" class="form-select" required>
+                <option value="">-- Choose Employee --</option>
+              </select>
+              <div class="hint" id="advCurrentBalanceHint">Current unsettled advance: ₹0</div>
+            </div>
+            <div class="form-group">
+              <label for="advAmount">Advance Amount (₹) *</label>
+              <input type="number" step="any" id="advAmount" class="form-control" placeholder="e.g. 2000" min="1"
+                required>
+            </div>
+            <div class="form-group">
+              <label for="advDate">Date of Advance *</label>
+              <input type="date" id="advDate" class="form-control" required>
+            </div>
+          </div>
+
+          <!-- Step 2: Payment Mode & Reason -->
+          <div class="step-pane" id="advStep2">
+            <div class="form-group">
+              <label for="advPaymentMode">Payment Method</label>
+              <select id="advPaymentMode" class="form-select">
+                <option value="Cash">Cash in Hand</option>
+                <option value="UPI">UPI</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="advReason">Reason / Purpose / Description *</label>
+              <textarea id="advReason" class="form-control" rows="3"
+                placeholder="Enter reason, purpose, or details for advance..." required></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="step-nav-left">
+            <button type="button" class="btn btn-outline" id="btnAdvPrevStep" style="display: none;">◀ Back</button>
+            <button type="button" class="btn btn-primary" id="btnAdvNextStep">Next: Reason & Mode ▶</button>
+          </div>
+          <div class="step-nav-right">
+            <button type="button" class="btn btn-outline" data-close="modalAdvance">Close</button>
+            <button type="button" class="btn btn-success" id="btnUpdateAdvance">Update</button>
+            <button type="submit" class="btn btn-primary" id="btnSaveAdvance">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 3. Record Salary Payment / Settlement Modal (Multi-Step Form) -->
+  <div class="modal-overlay" id="modalPayment">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modalPayTitle">Record Salary Payment</h3>
+        <button class="modal-close" data-close="modalPayment">&times;</button>
+      </div>
+
+      <!-- Step Wizard Indicator -->
+      <div class="step-wizard" id="payStepWizard">
+        <div class="step-indicator active" data-wizard="pay" data-step-target="1">
+          <span class="step-num">1</span>
+          <span>Settlement & Amount</span>
+        </div>
+        <div class="step-indicator" data-wizard="pay" data-step-target="2">
+          <span class="step-num">2</span>
+          <span>Payment Details & Notes</span>
+        </div>
+      </div>
+
+      <form id="formPayment" novalidate>
+        <input type="hidden" id="payPayrollId" value="">
+        <div class="modal-body">
+          <!-- Step 1: Settlement & Amount -->
+          <div class="step-pane active" id="payStep1">
+            <div
+              style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+              <div style="font-weight: 700; font-size: 14px; color: #0f172a;" id="payModalEmpName">Employee Name</div>
+              <div style="font-size: 12px; color: #64748b;" id="payModalMonth">Month: 2026-10</div>
+              <div style="margin-top: 8px; display: flex; justify-content: space-between; font-size: 13px;">
+                <span>Net Payable: <strong id="payModalNet">₹0</strong></span>
+                <span>Already Paid: <strong id="payModalPaid">₹0</strong></span>
+                <span style="color: #dc2626;">Remaining: <strong id="payModalRemaining">₹0</strong></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="payAmount">Payment Amount (₹) *</label>
+              <input type="number" step="0.01" id="payAmount" class="form-control" min="1" required>
+            </div>
+          </div>
+
+          <!-- Step 2: Payment Details & Notes -->
+          <div class="step-pane" id="payStep2">
+            <div class="form-group">
+              <label for="payMode">Payment Mode</label>
+              <select id="payMode" class="form-select">
+                <option value="Cash">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Cheque">Cheque</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="payRef">Reference / Transaction ID / Receipt No</label>
+              <input type="text" id="payRef" class="form-control" placeholder="e.g. Cash Voucher #44 or UPI Ref ID">
+            </div>
+            <div class="form-group">
+              <label for="payNotes">Reason / Purpose / Description</label>
+              <textarea id="payNotes" class="form-control" rows="2"
+                placeholder="Payment notes, voucher description or purpose..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="step-nav-left">
+            <button type="button" class="btn btn-outline" id="btnPayPrevStep" style="display: none;">◀ Back</button>
+            <button type="button" class="btn btn-primary" id="btnPayNextStep">Next: Payment Details ▶</button>
+          </div>
+          <div class="step-nav-right">
+            <button type="button" class="btn btn-outline" data-close="modalPayment">Close</button>
+            <button type="button" class="btn btn-primary" id="btnUpdatePayment">Update</button>
+            <button type="submit" class="btn btn-success" id="btnConfirmPayment">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 4. Admin Profile & Workshop Settings Modal (Multi-Step Form) -->
+  <div class="modal-overlay" id="modalAdminProfile">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3>Admin Profile & Workshop Settings</h3>
+        <button class="modal-close" data-close="modalAdminProfile">&times;</button>
+      </div>
+
+      <!-- Step Wizard Indicator -->
+      <div class="step-wizard" id="adminStepWizard">
+        <div class="step-indicator active" data-wizard="admin" data-step-target="1">
+          <span class="step-num">1</span>
+          <span>Admin & Workshop</span>
+        </div>
+        <div class="step-indicator" data-wizard="admin" data-step-target="2">
+          <span class="step-num">2</span>
+          <span>Security & Password</span>
+        </div>
+      </div>
+
+      <form id="formAdminProfile" novalidate>
+        <div class="modal-body">
+          <!-- Step 1: Admin & Workshop Details -->
+          <div class="step-pane active" id="adminStep1">
+            <div class="form-group">
+              <label for="adminFullName">Admin Full Name *</label>
+              <input type="text" id="adminFullName" class="form-control" placeholder="e.g. Workshop Admin" required>
+            </div>
+            <div class="form-group">
+              <label for="adminUsername">Username (Login ID) *</label>
+              <input type="text" id="adminUsername" class="form-control" placeholder="e.g. admin" required>
+            </div>
+            <div class="form-group">
+              <label for="adminEmail">Email Address</label>
+              <input type="email" id="adminEmail" class="form-control" placeholder="e.g. admin@tirupati-industries.com">
+            </div>
+            <div class="form-group">
+              <label for="adminPhone">Phone / Mobile</label>
+              <input type="text" id="adminPhone" class="form-control" placeholder="e.g. +91 98250 12345">
+            </div>
+            <div class="form-group">
+              <label for="adminWorkshopName">Workshop / Business Name</label>
+              <input type="text" id="adminWorkshopName" class="form-control" placeholder="e.g. Tirupati Industries">
+            </div>
+          </div>
+
+          <!-- Step 2: Password & Security -->
+          <div class="step-pane" id="adminStep2">
+            <div
+              style="background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12px; color: #475569;">
+              ℹ️ Leave password fields blank if you only want to update your name and profile details.
+            </div>
+            <div class="form-group">
+              <label for="adminCurrentPass">Current Password</label>
+              <input type="password" id="adminCurrentPass" class="form-control"
+                placeholder="Enter current password (if changing password)">
+            </div>
+            <div class="form-group">
+              <label for="adminNewPass">New Password</label>
+              <input type="password" id="adminNewPass" class="form-control" placeholder="Minimum 6 characters">
+            </div>
+            <div class="form-group">
+              <label for="adminConfirmPass">Confirm New Password</label>
+              <input type="password" id="adminConfirmPass" class="form-control" placeholder="Re-enter new password">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <div class="step-nav-left">
+            <button type="button" class="btn btn-outline" id="btnAdminPrevStep" style="display: none;">◀ Back</button>
+            <button type="button" class="btn btn-primary" id="btnAdminNextStep">Next: Security ▶</button>
+          </div>
+          <div class="step-nav-right">
+            <button type="button" class="btn btn-outline" data-close="modalAdminProfile">Close</button>
+            <button type="button" class="btn btn-success" id="btnUpdateAdminProfile">Update</button>
+            <button type="submit" class="btn btn-primary" id="btnSaveAdminProfile">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- 4. Employee Detailed Profile Modal -->
+  <div class="modal-overlay" id="modalEmpProfile">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="profileEmpName">Employee Profile & History</h3>
+        <button class="modal-close" data-close="modalEmpProfile">&times;</button>
+      </div>
+      <div class="modal-body" id="profileModalBody">
+        <!-- Injected dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close="modalEmpProfile">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 5. Printable Salary Slip Modal -->
+  <div class="modal-overlay" id="modalPayslip">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3>Workshop Salary Slip</h3>
+        <button class="modal-close" data-close="modalPayslip">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="payslipModalContent" class="payslip-box">
+          <!-- Injected dynamically for view & print -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-close="modalPayslip">Close</button>
+        <button type="button" class="btn btn-primary" id="btnPrintSlip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          <span>Print Salary Slip</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated print area for clean paper prints -->
+  <div id="payslipPrintArea"></div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Mobile Bottom Navigation Web Component -->
+  <mobile-bottom-nav></mobile-bottom-nav>
+
+  <!-- Client Application Scripts (Modular ES6 Architecture) -->
+  <script type="module" src="/js/app.js"></script>
+</body>
+
+</html>

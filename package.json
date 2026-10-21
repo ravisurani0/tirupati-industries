@@ -1,0 +1,43 @@
+{
+  "name": "tirupati.industries.rajkot",
+  "version": "1.0.0",
+  "description": "Tirupati Industries Rajkot - Workshop Employee, Salary, Leave & Advance Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "dev:ui": "vite",
+    "build": "vite build",
+    "migrate": "node src/db/migrate.js",
+    "seed": "node src/db/seed.js",
+    "clean": "node src/db/clean.js",
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [
+    "workshop-management",
+    "payroll",
+    "salary-calculation",
+    "advance-salary",
+    "attendance",
+    "rajkot-industries"
+  ],
+  "author": "Tirupati Industries",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.59.0",
+    "pg": "^8.19.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.2",
+    "vite": "^8.3.4"
+  }
+}

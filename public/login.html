@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - Tirupati Industries Rajkot Workshop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body {
+      background: radial-gradient(circle at 10% 20%, #1e293b 0%, #0f172a 90%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+    }
+    .login-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      padding: 36px 32px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .login-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .login-logo .brand-icon {
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+    }
+    .login-title h2 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+    .login-title p {
+      font-size: 12px;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .demo-credentials-box {
+      background-color: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .demo-credentials-box .text {
+      font-size: 12px;
+      color: #475569;
+    }
+    .demo-credentials-box .code {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="brand-icon">TI</div>
+        <div class="login-title">
+          <h2>TIRUPATI INDUSTRIES</h2>
+          <p>Workshop Portal • Rajkot</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">Admin Portal Login</h3>
+        <p style="font-size: 13px; color: #64748b;">Sign in to manage employee attendance, advances & payroll.</p>
+      </div>
+
+      <div class="demo-credentials-box">
+        <div class="text">
+          <span>Demo Account:</span>
+          <div>User: <span class="code">admin</span> | Pass: <span class="code">admin123</span></div>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" id="btnFillDemo">Auto-fill</button>
+      </div>
+
+      <div id="loginAlert" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-bottom: 16px;"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" class="form-control" style="width: 100%;" placeholder="Enter username (e.g. admin)" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-control" style="width: 100%;" placeholder="Enter password (e.g. admin123)" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="btnSubmit" class="btn btn-primary" style="width: 100%; padding: 10px; font-size: 14px; margin-top: 8px;">
+          <span>Secure Sign In</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+
+      <div style="margin-top: 24px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+        Tirupati Industries Workshop EMS • Rajkot, Gujarat
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const alertBox = document.getElementById('loginAlert');
+    const btnFill = document.getElementById('btnFillDemo');
+    const userInput = document.getElementById('username');
+    const passInput = document.getElementById('password');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    btnFill.addEventListener('click', () => {
+      userInput.value = 'admin';
+      passInput.value = 'admin123';
+      showAlert('Demo credentials filled! Click Secure Sign In.', 'info');
+    });
+
+    function showAlert(msg, type = 'error') {
+      alertBox.style.display = 'block';
+      alertBox.textContent = msg;
+      if (type === 'error') {
+        alertBox.style.backgroundColor = '#fef2f2';
+        alertBox.style.color = '#dc2626';
+        alertBox.style.border = '1px solid #fecaca';
+      } else {
+        alertBox.style.backgroundColor = '#eff6ff';
+        alertBox.style.color = '#2563eb';
+        alertBox.style.border = '1px solid #bfdbfe';
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = 'Signing in...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: userInput.value.trim(),
+            password: passInput.value
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        // Store token in localStorage as well as cookie
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        showAlert('Login successful! Redirecting to dashboard...', 'info');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
+      } catch (err) {
+        showAlert(err.message, 'error');
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Secure Sign In';
+      }
+    });
+
+    // Check if already logged in
+    (async function checkCurrentSession() {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const res = await fetch('/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            window.location.href = '/';
+          }
+        } catch (e) {
+          // Stay on login page
+        }
+      }
+    })();
+  </script>
+</body>
+</html>
