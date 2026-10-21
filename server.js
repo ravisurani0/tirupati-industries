@@ -21,6 +21,21 @@ const exportRoutes = require('./src/routes/export');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const checkDatabaseConfig = () => {
+  const hasDatabaseUrl = !!process.env.DATABASE_URL && !['host', 'db', 'database', 'localhost'].includes((process.env.DATABASE_URL || '').trim().toLowerCase());
+  const hasPgConfig = !!(
+    process.env.PGHOST && !['host', 'db', 'database', 'localhost'].includes((process.env.PGHOST || '').trim().toLowerCase()) &&
+    process.env.PGUSER && !['user', 'username', 'db', 'database'].includes((process.env.PGUSER || '').trim().toLowerCase()) &&
+    process.env.PGDATABASE && !['db', 'database', 'postgres'].includes((process.env.PGDATABASE || '').trim().toLowerCase())
+  );
+
+  return hasDatabaseUrl || hasPgConfig;
+};
+
+if (!checkDatabaseConfig()) {
+  console.warn('⚠️ No valid PostgreSQL configuration found. Set DATABASE_URL or PGHOST/PGUSER/PGDATABASE before starting the app.');
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
