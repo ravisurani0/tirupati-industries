@@ -47,6 +47,7 @@ export default function PayslipModal({ payrollId }) {
   return (
     <div className="modal-overlay active">
       <div className="modal-dialog" style={{ maxWidth: '680px' }}>
+        <div className="modal-sheet-handle" />
         <div className="modal-header">
           <h3>Salary Payment Voucher • {slip.month}</h3>
           <button className="modal-close" onClick={closeModal} aria-label="Close modal">
@@ -193,11 +194,11 @@ export default function PayslipModal({ payrollId }) {
           </div>
         </div>
 
-        <div className="modal-footer">
-          <button type="button" className="btn btn-outline" onClick={closeModal}>
+        <div className="modal-footer flex flex-col sm:flex-row sm:justify-end gap-2">
+          <button type="button" className="btn btn-outline w-full sm:w-auto" onClick={closeModal}>
             Close
           </button>
-          <button type="button" className="btn btn-primary" onClick={handlePrint}>
+          <button type="button" className="btn btn-primary w-full sm:w-auto justify-center" onClick={handlePrint}>
             <Printer size={16} />
             <span>Print Salary Slip</span>
           </button>

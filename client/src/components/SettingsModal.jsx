@@ -85,6 +85,7 @@ export default function SettingsModal() {
   return (
     <div className="modal-overlay active">
       <div className="modal-dialog">
+        <div className="modal-sheet-handle" />
         <div className="modal-header">
           <h3>Admin Profile & Workshop Settings</h3>
           <button className="modal-close" onClick={closeModal} aria-label="Close modal">
@@ -113,7 +114,7 @@ export default function SettingsModal() {
         <form onSubmit={step === 2 ? handleSubmit : handleNext}>
           <div className="modal-body">
             {step === 1 && (
-              <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="form-group">
                   <label htmlFor="adminFullName">Admin Full Name *</label>
                   <input
@@ -172,7 +173,7 @@ export default function SettingsModal() {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group sm:col-span-2">
                   <label htmlFor="adminWorkshopName">Workshop / Business Name</label>
                   <input
                     type="text"
@@ -189,14 +190,15 @@ export default function SettingsModal() {
             )}
 
             {step === 2 && (
-              <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div
+                  className="sm:col-span-2"
                   style={{
                     background: '#f1f5f9',
                     border: '1px solid #e2e8f0',
                     borderRadius: '8px',
                     padding: '12px',
-                    marginBottom: '16px',
+                    marginBottom: '8px',
                     fontSize: '12px',
                     color: '#475569'
                   }}
@@ -204,7 +206,7 @@ export default function SettingsModal() {
                   ℹ️ Leave password fields blank if you only want to update your profile name and details.
                 </div>
 
-                <div className="form-group">
+                <div className="form-group sm:col-span-2">
                   <label htmlFor="adminCurrentPass">Current Password</label>
                   <input
                     type="password"
@@ -249,28 +251,28 @@ export default function SettingsModal() {
             )}
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-footer flex flex-col sm:flex-row sm:justify-between items-stretch sm:items-center gap-2">
             <div>
               {step > 1 && (
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="btn btn-outline w-full sm:w-auto"
                   onClick={() => setStep(step - 1)}
                 >
                   ◀ Back
                 </button>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="button" className="btn btn-outline" onClick={closeModal}>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button type="button" className="btn btn-outline flex-1 sm:flex-initial" onClick={closeModal}>
                 Cancel
               </button>
               {step === 1 ? (
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary flex-1 sm:flex-initial">
                   Next: Security ▶
                 </button>
               ) : (
-                <button type="submit" className="btn btn-success" disabled={loading}>
+                <button type="submit" className="btn btn-success flex-1 sm:flex-initial" disabled={loading}>
                   {loading ? 'Saving...' : 'Save Settings'}
                 </button>
               )}

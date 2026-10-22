@@ -6,6 +6,7 @@ import BottomNav from './BottomNav';
 import ToastContainer from './ToastContainer';
 import EmployeeModal from './EmployeeModal';
 import AdvanceModal from './AdvanceModal';
+import LoanDetailsModal from './LoanDetailsModal';
 import PaymentModal from './PaymentModal';
 import PayslipModal from './PayslipModal';
 import ProfileModal from './ProfileModal';
@@ -20,7 +21,8 @@ import {
   Settings,
   LogOut,
   Menu,
-  RotateCw
+  RotateCw,
+  X
 } from 'lucide-react';
 
 const routeTitles = {
@@ -66,6 +68,13 @@ export default function Layout() {
             <h2>{user?.workshop_name?.split(' ')[0] || 'TIRUPATI'}</h2>
             <p>Industries • Rajkot</p>
           </div>
+          <button
+            className="btn-sidebar-close"
+            onClick={closeDrawer}
+            aria-label="Close navigation drawer"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -158,7 +167,7 @@ export default function Layout() {
       <main className="main-content">
         {/* Top Sticky Header */}
         <header className="top-header">
-          <div style={{ display: 'flex', alignSelf: 'center', alignItems: 'center' }}>
+          <div className="header-left">
             <button
               className="btn-sidebar-toggle"
               onClick={toggleDrawer}
@@ -168,7 +177,7 @@ export default function Layout() {
             </button>
             <div className="page-title">
               <h1>{currentInfo.title}</h1>
-              <p>{currentInfo.sub}</p>
+              <p className="page-subtitle">{currentInfo.sub}</p>
             </div>
           </div>
 
@@ -179,23 +188,25 @@ export default function Layout() {
             </div>
 
             <button
-              className="btn btn-outline btn-sm"
+              className="btn btn-outline btn-sm header-action-btn"
               onClick={() => openModal('settings')}
               title="Admin Settings & Password"
+              aria-label="Admin Settings"
             >
-              <Settings size={14} />
-              <span>Settings</span>
+              <Settings size={15} />
+              <span className="header-action-label">Settings</span>
             </button>
 
             <button
-              className="btn btn-outline btn-sm"
+              className="btn btn-outline btn-sm header-action-btn"
               onClick={() => {
                 window.location.reload();
               }}
               title="Refresh Application"
+              aria-label="Refresh Data"
             >
-              <RotateCw size={14} />
-              <span>Refresh</span>
+              <RotateCw size={15} />
+              <span className="header-action-label">Refresh</span>
             </button>
           </div>
         </header>
@@ -217,7 +228,17 @@ export default function Layout() {
         <EmployeeModal employee={activeModal.props?.employee} onSave={activeModal.props?.onSave} />
       )}
       {activeModal?.name === 'advance' && (
-        <AdvanceModal advance={activeModal.props?.advance} onSave={activeModal.props?.onSave} />
+        <AdvanceModal
+          advance={activeModal.props?.advance}
+          defaultType={activeModal.props?.defaultType}
+          onSave={activeModal.props?.onSave}
+        />
+      )}
+      {activeModal?.name === 'loanDetails' && (
+        <LoanDetailsModal
+          loanId={activeModal.props?.loanId}
+          onSave={activeModal.props?.onSave}
+        />
       )}
       {activeModal?.name === 'payment' && (
         <PaymentModal

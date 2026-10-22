@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { attendanceApi, formatDate } from '../api';
 import { useApp } from '../context/AppContext';
 import StatusBadge from '../components/StatusBadge';
-import { CheckCircle2, Save, Calendar, Clock } from 'lucide-react';
+import { CheckCircle2, Save, Calendar, Clock, LayoutGrid, List } from 'lucide-react';
 
 export default function AttendancePage() {
   const { showToast } = useApp();
@@ -105,12 +105,14 @@ export default function AttendancePage() {
     }
   };
 
+  const [viewMode, setViewMode] = useState('auto'); // 'auto', 'cards', 'table'
+
   return (
     <div>
       {/* Date Bar & Actions */}
-      <div className="action-banner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="action-banner flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 flex-wrap min-w-0">
+          <div className="flex items-center gap-2">
             <Calendar size={18} color="#2563eb" />
             <span style={{ fontSize: '13px', fontWeight: 700 }}>Attendance Date:</span>
             <input
@@ -123,18 +125,18 @@ export default function AttendancePage() {
           <span className="badge badge-neutral">{dailyRecords.length} Staff</span>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button type="button" className="btn btn-outline" onClick={markAllPresent}>
-            <CheckCircle2 size={16} />
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
+          <button type="button" className="btn btn-outline btn-sm flex-1 sm:flex-initial justify-center" onClick={markAllPresent}>
+            <CheckCircle2 size={15} />
             <span>Mark All Present</span>
           </button>
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary btn-sm flex-1 sm:flex-initial justify-center"
             onClick={handleSaveAttendance}
             disabled={saving}
           >
-            <Save size={16} />
+            <Save size={15} />
             <span>{saving ? 'Saving...' : 'Save Attendance'}</span>
           </button>
         </div>
@@ -142,10 +144,126 @@ export default function AttendancePage() {
 
       {/* Daily Attendance Grid */}
       <div className="card">
-        <div className="card-header">
+        <div className="card-header flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h3>Daily Workshop Log • {formatDate(date)}</h3>
+          <div className="view-toggle self-end sm:self-auto">
+            <button
+              type="button"
+              className={`view-toggle-btn ${viewMode === 'cards' ? 'active' : ''}`}
+              onClick={() => setViewMode(viewMode === 'cards' ? 'auto' : 'cards')}
+              title="Cards View"
+            >
+              <LayoutGrid size={13} />
+              <span>Cards</span>
+            </button>
+            <button
+              type="button"
+              className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+              onClick={() => setViewMode(viewMode === 'table' ? 'auto' : 'table')}
+              title="Table View"
+            >
+              <List size={13} />
+              <span>Table</span>
+            </button>
+          </div>
         </div>
-        <div className="table-responsive">
+
+        {/* Mobile Touch Cards View - ONLY visible on mobile screens unless explicitly toggled to cards */}
+        <div className={`mobile-cards-list ${viewMode === 'cards' ? 'force-cards' : viewMode === 'table' ? 'hidden' : ''}`}>
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+              Loading daily log...
+            </div>
+          ) : dailyRecords.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
+              No active employees found for this date.
+            </div>
+          ) : (
+            dailyRecords.map((row) => (
+              <div className="att-mobile-card" key={`att_card_${row.employee_id}`}>
+                <div className="wmc-header">
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{row.name}</div>
+                    <div style={{ fontSize: '12px', color: '#64748b' }}>{row.designation}</div>
+                  </div>
+                  <StatusBadge status={row.employment_type} />
+                </div>
+
+                <div className="att-status-pills">
+                  <button
+                    type="button"
+                    className={`att-status-pill ${row.status === 'present' ? 'active-present' : ''}`}
+                    onClick={() => handleStatusChange(row.employee_id, 'present')}
+                  >
+                    Present (1.0)
+                  </button>
+                  <button
+                    type="button"
+                    className={`att-status-pill ${row.status === 'half_day' ? 'active-half_day' : ''}`}
+                    onClick={() => handleStatusChange(row.employee_id, 'half_day')}
+                  >
+                    Half-Day (0.5)
+                  </button>
+                  <button
+                    type="button"
+                    className={`att-status-pill ${row.status === 'absent' ? 'active-absent' : ''}`}
+                    onClick={() => handleStatusChange(row.employee_id, 'absent')}
+                  >
+                    Absent (0)
+                  </button>
+                  <button
+                    type="button"
+                    className={`att-status-pill ${row.status === 'paid_leave' ? 'active-paid_leave' : ''}`}
+                    onClick={() => handleStatusChange(row.employee_id, 'paid_leave')}
+                  >
+                    Paid Leave
+                  </button>
+                </div>
+
+                <div className="att-inputs-grid">
+                  <div className="att-input-box">
+                    <label>Shift Hours</label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="24"
+                      className="form-control"
+                      value={row.hours_worked}
+                      onChange={(e) => handleHoursChange(row.employee_id, 'hours_worked', e.target.value)}
+                    />
+                  </div>
+                  <div className="att-input-box">
+                    <label>Overtime (OT)</label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="16"
+                      className="form-control"
+                      value={row.overtime_hours}
+                      onChange={(e) => handleHoursChange(row.employee_id, 'overtime_hours', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="att-input-box">
+                  <label>Shift Note</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="e.g. Overtime on lathe, early departure..."
+                    value={row.notes}
+                    onChange={(e) => handleNotesChange(row.employee_id, e.target.value)}
+                  />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Desktop Table View - ONLY visible on md and up unless explicitly toggled to table */}
+        <div className={`table-responsive ${viewMode === 'cards' ? 'force-hidden' : viewMode === 'table' ? 'force-table' : 'hidden md:block'}`}>
           <table className="app-table">
             <thead>
               <tr>
@@ -269,9 +387,23 @@ export default function AttendancePage() {
         </div>
       </div>
 
+      {/* Floating Save Bar on Mobile */}
+      <div className="sticky-mobile-save-bar">
+        <span>Daily Log • {dailyRecords.length} Staff</span>
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          onClick={handleSaveAttendance}
+          disabled={saving}
+        >
+          <Save size={15} />
+          <span>{saving ? 'Saving...' : 'Save Attendance'}</span>
+        </button>
+      </div>
+
       {/* Monthly Attendance Matrix */}
       <div className="card" style={{ marginTop: '30px' }}>
-        <div className="card-header">
+        <div className="card-header flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Clock size={18} color="#2563eb" />
             <h3>Monthly Attendance Matrix & Accumulated Hours</h3>

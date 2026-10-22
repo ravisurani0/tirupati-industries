@@ -46,35 +46,35 @@ export default function DashboardPage() {
   return (
     <div>
       {/* Quick Action Top Banner */}
-      <div className="action-banner">
+      <div className="action-banner flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
         <div>
-          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>Workshop Quick Actions</h3>
-          <p style={{ fontSize: '12px', color: '#64748b' }}>Fast-track daily worker check-ins, advance vouchers & payroll</p>
+          <h3 className="text-sm sm:text-base font-bold text-slate-900">Workshop Quick Actions</h3>
+          <p className="text-xs text-slate-500">Fast-track daily worker check-ins, advance vouchers & payroll</p>
         </div>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div className="dashboard-actions-grid grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto">
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary btn-sm justify-center"
             onClick={() => openModal('employee', { onSave: loadData })}
           >
             <UserPlus size={15} />
             <span>Add Worker</span>
           </button>
           <button
-            className="btn btn-outline btn-sm"
+            className="btn btn-outline btn-sm justify-center"
             onClick={() => openModal('advance', { onSave: loadData })}
           >
             <HandCoins size={15} />
             <span>Issue Advance</span>
           </button>
           <button
-            className="btn btn-outline btn-sm"
+            className="btn btn-outline btn-sm justify-center"
             onClick={() => navigate('/attendance')}
           >
             <CalendarCheck size={15} />
             <span>Log Attendance</span>
           </button>
           <button
-            className="btn btn-outline btn-sm"
+            className="btn btn-outline btn-sm justify-center"
             onClick={() => navigate('/payroll')}
           >
             <Receipt size={15} />
@@ -84,7 +84,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 4 Primary KPI Cards */}
-      <div className="stats-grid">
+      <div className="stats-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <StatCard
           title="Active Staff"
           value={employeeCounts.active_employees || 0}
@@ -116,17 +116,44 @@ export default function DashboardPage() {
       </div>
 
       {/* Side-by-side Tables */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+      <div className="dashboard-tables-grid grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Left: Today's Attendance Feed */}
         <div className="card">
-          <div className="card-header">
-            <h3>Today's Worker Attendance</h3>
+          <div className="card-header flex items-center justify-between">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900">Today's Worker Attendance</h3>
             <button className="btn btn-outline btn-sm" onClick={() => navigate('/attendance')}>
               <span>View All</span>
               <ArrowRight size={14} />
             </button>
           </div>
-          <div className="table-responsive">
+
+          {/* Mobile Attendance Cards */}
+          <div className="mobile-cards-list flex flex-col md:hidden p-3 gap-2.5">
+            {todayAttendance.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#94a3b8', padding: '24px' }}>
+                No attendance logged for today.
+              </div>
+            ) : (
+              todayAttendance.map((row) => (
+                <div
+                  key={`mob_att_${row.employee_id}`}
+                  className="p-3 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between gap-2"
+                >
+                  <div className="min-w-0">
+                    <div className="font-semibold text-sm text-slate-900 truncate">{row.name}</div>
+                    <div className="text-xs text-slate-500">{row.designation} • {row.hours_worked || 0} hrs</div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <StatusBadge status={row.employment_type} />
+                    <StatusBadge status={row.status || 'unmarked'} />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="table-responsive hidden md:block">
             <table className="app-table">
               <thead>
                 <tr>
@@ -169,14 +196,52 @@ export default function DashboardPage() {
 
         {/* Right: Recent Advances Ledger */}
         <div className="card">
-          <div className="card-header">
-            <h3>Recent Worker Advances</h3>
+          <div className="card-header flex items-center justify-between">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900">Recent Worker Advances</h3>
             <button className="btn btn-outline btn-sm" onClick={() => navigate('/advances')}>
               <span>View All</span>
               <ArrowRight size={14} />
             </button>
           </div>
-          <div className="table-responsive">
+
+          {/* Mobile Advances Cards */}
+          <div className="mobile-cards-list flex flex-col md:hidden p-3 gap-2.5">
+            {recentAdvances.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#94a3b8', padding: '24px' }}>
+                No advance disbursements recorded yet.
+              </div>
+            ) : (
+              recentAdvances.map((adv) => {
+                const remaining = parseFloat(adv.amount) - parseFloat(adv.settled_amount);
+                return (
+                  <div
+                    key={`mob_adv_${adv.id}`}
+                    className="p-3 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-between gap-2"
+                  >
+                    <div className="min-w-0">
+                      <div className="font-semibold text-sm text-slate-900 truncate">{adv.employee_name}</div>
+                      <div className="text-xs text-slate-500">
+                        {formatDate(adv.date)} • {adv.reason || 'Personal'}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="font-bold text-sm text-amber-600">{formatCurrency(adv.amount)}</div>
+                      <div className="text-xs">
+                        {remaining > 0 ? (
+                          <span className="badge badge-warning">{formatCurrency(remaining)}</span>
+                        ) : (
+                          <span className="badge badge-success">Settled</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Desktop Table View */}
+          <div className="table-responsive hidden md:block">
             <table className="app-table">
               <thead>
                 <tr>

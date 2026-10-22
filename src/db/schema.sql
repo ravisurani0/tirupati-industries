@@ -53,12 +53,18 @@ CREATE TABLE IF NOT EXISTS attendance (
   CONSTRAINT unique_employee_date UNIQUE (employee_id, date)
 );
 
--- 4. Advance Salary Table
+-- 4. Advance & Loan Table
+-- Type: 'advance' (Salary advance adjusted in next month salary)
+--       'loan' (Staff loan with interest and multiple repayment installments)
 CREATE TABLE IF NOT EXISTS advances (
   id SERIAL PRIMARY KEY,
   employee_id INTEGER NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+  type VARCHAR(20) NOT NULL DEFAULT 'advance', -- 'advance' or 'loan'
   date DATE NOT NULL DEFAULT CURRENT_DATE,
   amount NUMERIC(12, 2) NOT NULL,
+  deduction_month VARCHAR(7), -- 'YYYY-MM' for type 'advance' (next month salary)
+  interest_rate NUMERIC(6, 2) DEFAULT 0, -- For loans: percentage rate
+  interest_type VARCHAR(20) DEFAULT 'monthly', -- 'daily', 'monthly', 'yearly'
   reason VARCHAR(255),
   payment_mode VARCHAR(50) DEFAULT 'Cash',
   status VARCHAR(20) DEFAULT 'unsettled', -- 'unsettled', 'settled', 'partially_settled'
@@ -66,6 +72,11 @@ CREATE TABLE IF NOT EXISTS advances (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE advances ADD COLUMN IF NOT EXISTS type VARCHAR(20) DEFAULT 'advance';
+ALTER TABLE advances ADD COLUMN IF NOT EXISTS deduction_month VARCHAR(7);
+ALTER TABLE advances ADD COLUMN IF NOT EXISTS interest_rate NUMERIC(6, 2) DEFAULT 0;
+ALTER TABLE advances ADD COLUMN IF NOT EXISTS interest_type VARCHAR(20) DEFAULT 'monthly';
 
 -- 5. Monthly Payroll Records Table
 CREATE TABLE IF NOT EXISTS payroll_records (
@@ -107,6 +118,18 @@ CREATE TABLE IF NOT EXISTS advance_deductions_log (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 7. Loan Repayments Table (Multiple repayment entries under a loan)
+CREATE TABLE IF NOT EXISTS loan_repayments (
+  id SERIAL PRIMARY KEY,
+  advance_id INTEGER NOT NULL REFERENCES advances(id) ON DELETE CASCADE,
+  repayment_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  amount NUMERIC(12, 2) NOT NULL,
+  payment_mode VARCHAR(50) DEFAULT 'Cash',
+  notes VARCHAR(255),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for fast queries
 CREATE INDEX IF NOT EXISTS idx_employees_status ON employees(status);
 CREATE INDEX IF NOT EXISTS idx_attendance_employee_date ON attendance(employee_id, date);
@@ -114,5 +137,8 @@ CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date);
 CREATE INDEX IF NOT EXISTS idx_advances_employee ON advances(employee_id);
 CREATE INDEX IF NOT EXISTS idx_advances_date ON advances(date);
 CREATE INDEX IF NOT EXISTS idx_advances_status ON advances(status);
+CREATE INDEX IF NOT EXISTS idx_advances_type ON advances(type);
+CREATE INDEX IF NOT EXISTS idx_loan_repayments_advance ON loan_repayments(advance_id);
+CREATE INDEX IF NOT EXISTS idx_loan_repayments_date ON loan_repayments(repayment_date);
 CREATE INDEX IF NOT EXISTS idx_payroll_month ON payroll_records(month);
 CREATE INDEX IF NOT EXISTS idx_payroll_employee ON payroll_records(employee_id);

@@ -94,63 +94,107 @@ router.get('/payroll', async (req, res) => {
   }
 });
 
+const { calculateLoanDetails } = require('../utils/loanCalculator');
+
 // GET /api/export/advances
 router.get('/advances', async (req, res) => {
   try {
-    const { status } = req.query;
+    const { status, type } = req.query;
     let query = `
       SELECT 
-        a.id,
+        a.*,
+        COALESCE(a.type, 'advance') AS type,
         e.name AS employee_name,
-        e.designation,
-        a.date,
-        a.amount,
-        a.settled_amount,
-        (a.amount - a.settled_amount) AS remaining_unsettled,
-        a.reason,
-        a.payment_mode,
-        a.status
+        e.designation
       FROM advances a
       JOIN employees e ON a.employee_id = e.id
+      WHERE 1=1
     `;
     const params = [];
     if (status && status !== 'all') {
       params.push(status);
-      query += ` WHERE a.status = $1`;
+      query += ` AND a.status = $${params.length}`;
+    }
+    if (type && type !== 'all') {
+      params.push(type);
+      query += ` AND a.type = $${params.length}`;
     }
     query += ` ORDER BY a.date DESC, a.id DESC`;
 
     const result = await pool.query(query, params);
 
+    // Fetch repayments for loans
+    const loanRows = result.rows.filter(r => r.type === 'loan');
+    let repaymentsMap = {};
+    if (loanRows.length > 0) {
+      const loanIds = loanRows.map(r => r.id);
+      const repRes = await pool.query(
+        `SELECT * FROM loan_repayments WHERE advance_id = ANY($1) ORDER BY repayment_date ASC, id ASC`,
+        [loanIds]
+      );
+      for (const rep of repRes.rows) {
+        if (!repaymentsMap[rep.advance_id]) repaymentsMap[rep.advance_id] = [];
+        repaymentsMap[rep.advance_id].push(rep);
+      }
+    }
+
     const headers = [
-      'Advance ID', 'Employee Name', 'Designation', 'Advance Date',
-      'Total Advance (₹)', 'Settled (₹)', 'Remaining Unsettled (₹)',
-      'Reason / Note', 'Disbursement Mode', 'Status'
+      'Record ID', 'Type', 'Employee Name', 'Designation', 'Disbursement Date',
+      'Principal/Amount (₹)', 'Interest Rate (%)', 'Interest Basis',
+      'Accrued Interest (₹)', 'Total Payable (₹)', 'Total Repaid/Settled (₹)',
+      'Remaining Balance (₹)', 'Salary Adjustment Month', 'Purpose / Reason',
+      'Payment Mode', 'Status'
     ];
 
     let csvContent = headers.join(',') + '\n';
     for (const r of result.rows) {
+      let intRate = '';
+      let intBasis = '';
+      let accruedInt = 0;
+      let totalPayable = parseFloat(r.amount);
+      let totalRepaid = parseFloat(r.settled_amount) || 0;
+      let remaining = totalPayable - totalRepaid;
+      let statusStr = r.status.toUpperCase();
+
+      if (r.type === 'loan') {
+        const reps = repaymentsMap[r.id] || [];
+        const calc = calculateLoanDetails(r, reps);
+        intRate = calc.interestRate;
+        intBasis = calc.interestType;
+        accruedInt = calc.totalAccruedInterest;
+        totalPayable = calc.totalPayable;
+        totalRepaid = calc.totalRepaid;
+        remaining = calc.remainingBalance;
+        statusStr = calc.status.toUpperCase();
+      }
+
       const line = [
         toCSVCell(r.id),
+        toCSVCell(r.type === 'loan' ? 'Staff Loan' : 'Salary Advance'),
         toCSVCell(r.employee_name),
         toCSVCell(r.designation),
         toCSVCell(r.date.toISOString().split('T')[0]),
         toCSVCell(r.amount),
-        toCSVCell(r.settled_amount),
-        toCSVCell(r.remaining_unsettled),
+        toCSVCell(intRate),
+        toCSVCell(intBasis),
+        toCSVCell(accruedInt),
+        toCSVCell(totalPayable),
+        toCSVCell(totalRepaid),
+        toCSVCell(remaining),
+        toCSVCell(r.type === 'advance' ? (r.deduction_month || '') : ''),
         toCSVCell(r.reason),
         toCSVCell(r.payment_mode),
-        toCSVCell(r.status.toUpperCase())
+        toCSVCell(statusStr)
       ].join(',');
       csvContent += line + '\n';
     }
 
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename=Tirupati_Advances_Report.csv`);
+    res.setHeader('Content-Disposition', `attachment; filename=Tirupati_Advances_Loans_Report.csv`);
     res.send(csvContent);
   } catch (err) {
     console.error('Export advances CSV error:', err);
-    res.status(500).json({ error: 'Failed to export advances report.' });
+    res.status(500).json({ error: 'Failed to export advances and loans report.' });
   }
 });
 

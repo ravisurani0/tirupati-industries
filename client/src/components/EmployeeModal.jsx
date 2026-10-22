@@ -91,6 +91,7 @@ export default function EmployeeModal({ employee, onSave }) {
   return (
     <div className="modal-overlay active">
       <div className="modal-dialog">
+        <div className="modal-sheet-handle" />
         <div className="modal-header">
           <h3>{employee ? `Edit Employee: ${employee.name}` : 'Add New Workshop Employee'}</h3>
           <button className="modal-close" onClick={closeModal} aria-label="Close modal">
@@ -126,8 +127,8 @@ export default function EmployeeModal({ employee, onSave }) {
         <form onSubmit={step === 3 ? handleSubmit : handleNext}>
           <div className="modal-body">
             {step === 1 && (
-              <div>
-                <div className="form-group">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="form-group sm:col-span-2">
                   <label htmlFor="empName">Full Name *</label>
                   <input
                     type="text"
@@ -155,20 +156,6 @@ export default function EmployeeModal({ employee, onSave }) {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="empDesignation">Designation / Role *</label>
-                  <input
-                    type="text"
-                    id="empDesignation"
-                    name="designation"
-                    className="form-control"
-                    style={{ width: '100%' }}
-                    placeholder="e.g. CNC Operator, Lathe Turner, Helper"
-                    value={formData.designation}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
                   <label htmlFor="empStatus">Status</label>
                   <select
                     id="empStatus"
@@ -182,12 +169,26 @@ export default function EmployeeModal({ employee, onSave }) {
                     <option value="inactive">Inactive / On Leave</option>
                   </select>
                 </div>
+                <div className="form-group sm:col-span-2">
+                  <label htmlFor="empDesignation">Designation / Role *</label>
+                  <input
+                    type="text"
+                    id="empDesignation"
+                    name="designation"
+                    className="form-control"
+                    style={{ width: '100%' }}
+                    placeholder="e.g. CNC Operator, Lathe Turner, Helper"
+                    value={formData.designation}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
             )}
 
             {step === 2 && (
-              <div>
-                <div className="form-group">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="form-group sm:col-span-2">
                   <label htmlFor="empType">Employment / Wage Type *</label>
                   <select
                     id="empType"
@@ -202,7 +203,7 @@ export default function EmployeeModal({ employee, onSave }) {
                   </select>
                 </div>
 
-                <div className="form-group">
+                <div className="form-group sm:col-span-2">
                   <label htmlFor="empSalary">
                     {formData.employment_type === 'hourly'
                       ? 'Hourly Wage Rate (₹/hr) *'
@@ -259,7 +260,7 @@ export default function EmployeeModal({ employee, onSave }) {
             )}
 
             {step === 3 && (
-              <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="form-group">
                   <label htmlFor="empPaymentMode">Preferred Payment Mode</label>
                   <select
@@ -291,7 +292,7 @@ export default function EmployeeModal({ employee, onSave }) {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group sm:col-span-2">
                   <label htmlFor="empNotes">Additional Notes</label>
                   <textarea
                     id="empNotes"
@@ -308,28 +309,28 @@ export default function EmployeeModal({ employee, onSave }) {
             )}
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-footer flex flex-col sm:flex-row sm:justify-between items-stretch sm:items-center gap-2">
             <div>
               {step > 1 && (
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="btn btn-outline w-full sm:w-auto"
                   onClick={() => setStep(step - 1)}
                 >
                   ◀ Back
                 </button>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="button" className="btn btn-outline" onClick={closeModal}>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button type="button" className="btn btn-outline flex-1 sm:flex-initial" onClick={closeModal}>
                 Cancel
               </button>
               {step < 3 ? (
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary flex-1 sm:flex-initial">
                   {step === 1 ? 'Next: Wage & Shifts ▶' : 'Next: Payment & Notes ▶'}
                 </button>
               ) : (
-                <button type="submit" className="btn btn-success" disabled={loading}>
+                <button type="submit" className="btn btn-success flex-1 sm:flex-initial" disabled={loading}>
                   {loading ? 'Saving...' : employee ? 'Update Employee' : 'Save Employee'}
                 </button>
               )}

@@ -12,8 +12,10 @@ router.get('/', async (req, res) => {
     let query = `
       SELECT 
         e.*,
-        COALESCE(SUM(a.amount - a.settled_amount) FILTER (WHERE a.status != 'settled'), 0) AS unsettled_advance_total,
-        COUNT(a.id) FILTER (WHERE a.status != 'settled') AS unsettled_advance_count
+        COALESCE(SUM(a.amount - a.settled_amount) FILTER (WHERE a.status != 'settled' AND COALESCE(a.type, 'advance') = 'advance'), 0) AS unsettled_advance_total,
+        COUNT(a.id) FILTER (WHERE a.status != 'settled' AND COALESCE(a.type, 'advance') = 'advance') AS unsettled_advance_count,
+        COALESCE(SUM(a.amount - a.settled_amount) FILTER (WHERE a.status != 'settled' AND a.type = 'loan'), 0) AS active_loan_balance,
+        COUNT(a.id) FILTER (WHERE a.status != 'settled' AND a.type = 'loan') AS active_loan_count
       FROM employees e
       LEFT JOIN advances a ON e.id = a.employee_id
       WHERE 1=1

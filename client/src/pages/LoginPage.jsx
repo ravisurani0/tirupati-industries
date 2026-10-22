@@ -42,11 +42,12 @@ export default function LoginPage() {
     <div
       style={{
         minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        padding: '20px'
+        padding: '16px'
       }}
     >
       <div
@@ -56,7 +57,7 @@ export default function LoginPage() {
           background: '#ffffff',
           borderRadius: '16px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
-          padding: '36px 30px',
+          padding: 'clamp(24px, 6vw, 36px) clamp(18px, 5vw, 30px)',
           border: '1px solid rgba(255, 255, 255, 0.1)'
         }}
       >

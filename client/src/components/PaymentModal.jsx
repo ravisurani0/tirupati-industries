@@ -55,6 +55,7 @@ export default function PaymentModal({ item, month, onSave }) {
   return (
     <div className="modal-overlay active">
       <div className="modal-dialog">
+        <div className="modal-sheet-handle" />
         <div className="modal-header">
           <h3>Record Salary Payment</h3>
           <button className="modal-close" onClick={closeModal} aria-label="Close modal">
@@ -187,28 +188,28 @@ export default function PaymentModal({ item, month, onSave }) {
             )}
           </div>
 
-          <div className="modal-footer">
+          <div className="modal-footer flex flex-col sm:flex-row sm:justify-between items-stretch sm:items-center gap-2">
             <div>
               {step > 1 && (
                 <button
                   type="button"
-                  className="btn btn-outline"
+                  className="btn btn-outline w-full sm:w-auto"
                   onClick={() => setStep(step - 1)}
                 >
                   ◀ Back
                 </button>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button type="button" className="btn btn-outline" onClick={closeModal}>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button type="button" className="btn btn-outline flex-1 sm:flex-initial" onClick={closeModal}>
                 Cancel
               </button>
               {step === 1 ? (
-                <button type="submit" className="btn btn-primary">
+                <button type="submit" className="btn btn-primary flex-1 sm:flex-initial">
                   Next: Payment Details ▶
                 </button>
               ) : (
-                <button type="submit" className="btn btn-success" disabled={loading}>
+                <button type="submit" className="btn btn-success flex-1 sm:flex-initial" disabled={loading}>
                   {loading ? 'Recording...' : 'Confirm & Save Payment'}
                 </button>
               )}

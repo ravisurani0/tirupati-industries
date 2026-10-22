@@ -37,12 +37,15 @@ router.get('/stats', async (req, res) => {
     );
     const todayAtt = todayAttRes.rows[0];
 
-    // 3. Advance financial summary
+    // 3. Advance and Loan financial summary
     const advanceRes = await pool.query(`
       SELECT 
-        COALESCE(SUM(amount - settled_amount) FILTER (WHERE status != 'settled'), 0) AS total_unsettled_advance,
-        COALESCE(SUM(amount) FILTER (WHERE date::text LIKE '${currentMonth}%'), 0) AS month_advance_given,
-        COUNT(*) FILTER (WHERE status != 'settled') AS unsettled_count
+        COALESCE(SUM(amount - settled_amount) FILTER (WHERE COALESCE(type, 'advance') = 'advance' AND status != 'settled'), 0) AS total_unsettled_advance,
+        COALESCE(SUM(amount) FILTER (WHERE COALESCE(type, 'advance') = 'advance' AND date::text LIKE '${currentMonth}%'), 0) AS month_advance_given,
+        COUNT(*) FILTER (WHERE COALESCE(type, 'advance') = 'advance' AND status != 'settled') AS unsettled_count,
+        COUNT(*) FILTER (WHERE type = 'loan' AND status != 'settled') AS active_loans_count,
+        COALESCE(SUM(amount) FILTER (WHERE type = 'loan'), 0) AS total_loan_principal,
+        COALESCE(SUM(amount - settled_amount) FILTER (WHERE type = 'loan' AND status != 'settled'), 0) AS active_loan_balance
       FROM advances
     `);
     const advanceStats = advanceRes.rows[0];
@@ -63,13 +66,13 @@ router.get('/stats', async (req, res) => {
     );
     const payrollStats = payrollRes.rows[0];
 
-    // 5. Recent advances
+    // 5. Recent advances and loans
     const recentAdvancesRes = await pool.query(`
-      SELECT a.*, e.name AS employee_name, e.designation, e.employment_type
+      SELECT a.*, COALESCE(a.type, 'advance') AS type, e.name AS employee_name, e.designation, e.employment_type
       FROM advances a
       JOIN employees e ON a.employee_id = e.id
       ORDER BY a.date DESC, a.id DESC
-      LIMIT 5
+      LIMIT 6
     `);
 
     // 6. Recent employees

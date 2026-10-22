@@ -44,6 +44,7 @@ export default function ProfileModal({ employeeId }) {
   return (
     <div className="modal-overlay active">
       <div className="modal-dialog" style={{ maxWidth: '680px' }}>
+        <div className="modal-sheet-handle" />
         <div className="modal-header">
           <h3>{employee.name} - Profile & Ledger</h3>
           <button className="modal-close" onClick={closeModal} aria-label="Close modal">
@@ -191,8 +192,8 @@ export default function ProfileModal({ employeeId }) {
           </div>
         </div>
 
-        <div className="modal-footer">
-          <button type="button" className="btn btn-outline" onClick={closeModal}>
+        <div className="modal-footer flex justify-end">
+          <button type="button" className="btn btn-outline w-full sm:w-auto" onClick={closeModal}>
             Close
           </button>
         </div>

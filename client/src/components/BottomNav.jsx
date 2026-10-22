@@ -1,11 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarCheck, HandCoins, Receipt, Menu } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { LayoutDashboard, Users, CalendarCheck, HandCoins, Receipt } from 'lucide-react';
 
 export default function BottomNav() {
-  const { toggleDrawer } = useApp();
-
   return (
     <nav className="bottom-nav" aria-label="Mobile Bottom Navigation">
       <div className="bottom-nav-container">
@@ -15,6 +12,14 @@ export default function BottomNav() {
         >
           <LayoutDashboard size={20} />
           <span>Dashboard</span>
+        </NavLink>
+
+        <NavLink
+          to="/employees"
+          className={({ isActive }) => `bnav-item ${isActive ? 'active' : ''}`}
+        >
+          <Users size={20} />
+          <span>Staff</span>
         </NavLink>
 
         <NavLink
@@ -40,16 +45,6 @@ export default function BottomNav() {
           <Receipt size={20} />
           <span>Payroll</span>
         </NavLink>
-
-        <button
-          type="button"
-          className="bnav-item bnav-more-btn"
-          onClick={toggleDrawer}
-          aria-label="Open More Menu"
-        >
-          <Menu size={20} />
-          <span>More</span>
-        </button>
       </div>
     </nav>
   );

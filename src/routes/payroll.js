@@ -51,16 +51,23 @@ router.get('/calculate', async (req, res) => {
       attendanceMap[row.employee_id] = row;
     }
 
-    // 3. Get unsettled advances for each employee (taken on or before month end)
+    // 3. Get unsettled salary advances for each employee eligible for deduction in this month
+    // Advances of type 'advance' adjust in next month's salary (deduction_month <= targetMonth)
+    // Loans (type 'loan') have their own separate repayment flow and are not deducted in general monthly payroll
     const advancesRes = await pool.query(
       `SELECT 
         employee_id,
         COALESCE(SUM(amount - settled_amount), 0) AS total_unsettled_advance,
         COUNT(id) AS advance_count
        FROM advances
-       WHERE status != 'settled' AND date <= $1
+       WHERE COALESCE(type, 'advance') = 'advance'
+         AND status != 'settled'
+         AND (
+           deduction_month <= $1
+           OR (deduction_month IS NULL AND to_char(date + interval '1 month', 'YYYY-MM') <= $1)
+         )
        GROUP BY employee_id`,
-      [endDate]
+      [targetMonth]
     );
 
     const advancesMap = {};
@@ -299,12 +306,18 @@ router.post('/save', async (req, res) => {
       if (parseFloat(advance_deduction) > 0) {
         let deductionToAllocate = parseFloat(advance_deduction);
 
-        // Fetch unsettled advances for this employee in order of date
+        // Fetch unsettled eligible salary advances for this employee in order of date
         const unsettledAdvances = await client.query(
           `SELECT id, amount, settled_amount FROM advances 
-           WHERE employee_id = $1 AND status != 'settled' 
+           WHERE employee_id = $1 
+             AND COALESCE(type, 'advance') = 'advance'
+             AND status != 'settled' 
+             AND (
+               deduction_month <= $2
+               OR (deduction_month IS NULL AND to_char(date + interval '1 month', 'YYYY-MM') <= $2)
+             )
            ORDER BY date ASC, id ASC`,
-          [employee_id]
+          [employee_id, month]
         );
 
         for (const adv of unsettledAdvances.rows) {

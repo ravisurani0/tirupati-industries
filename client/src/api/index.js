@@ -120,10 +120,13 @@ export const advancesApi = {
     const q = new URLSearchParams(params).toString();
     return apiJson(`/api/advances${q ? '?' + q : ''}`);
   },
+  getById: (id) => apiJson(`/api/advances/${id}`),
   getSummary: () => apiJson('/api/advances/summary'),
   create: (payload) => apiJson('/api/advances', { method: 'POST', body: JSON.stringify(payload) }),
   update: (id, payload) => apiJson(`/api/advances/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
-  delete: (id) => apiJson(`/api/advances/${id}`, { method: 'DELETE' })
+  delete: (id) => apiJson(`/api/advances/${id}`, { method: 'DELETE' }),
+  addRepayment: (id, payload) => apiJson(`/api/advances/${id}/repayments`, { method: 'POST', body: JSON.stringify(payload) }),
+  deleteRepayment: (id, repaymentId) => apiJson(`/api/advances/${id}/repayments/${repaymentId}`, { method: 'DELETE' })
 };
 
 export const payrollApi = {
@@ -135,5 +138,5 @@ export const payrollApi = {
 
 export const reportsApi = {
   getPayrollCsvUrl: (month) => `/api/export/payroll?month=${encodeURIComponent(month)}`,
-  getAdvancesCsvUrl: (status = 'all') => `/api/export/advances?status=${encodeURIComponent(status)}`
+  getAdvancesCsvUrl: (status = 'all', type = 'all') => `/api/export/advances?status=${encodeURIComponent(status)}&type=${encodeURIComponent(type)}`
 };

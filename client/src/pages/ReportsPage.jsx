@@ -8,6 +8,7 @@ export default function ReportsPage() {
 
   const [payrollMonth, setPayrollMonth] = useState(currentMonthStr);
   const [advanceFilter, setAdvanceFilter] = useState('all');
+  const [advanceType, setAdvanceType] = useState('all');
 
   const downloadPayrollCSV = () => {
     showToast(`Downloading Payroll Audit CSV for ${payrollMonth}...`, 'info');
@@ -15,8 +16,8 @@ export default function ReportsPage() {
   };
 
   const downloadAdvancesCSV = () => {
-    showToast('Downloading Advances Ledger CSV...', 'info');
-    window.location.href = `/api/export/advances?status=${encodeURIComponent(advanceFilter)}`;
+    showToast('Downloading Advances & Loans Ledger CSV...', 'info');
+    window.location.href = `/api/export/advances?status=${encodeURIComponent(advanceFilter)}&type=${encodeURIComponent(advanceType)}`;
   };
 
   return (
@@ -30,9 +31,9 @@ export default function ReportsPage() {
         </p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Card 1: Payroll Summary CSV */}
-        <div className="card" style={{ padding: '24px' }}>
+        <div className="card" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
             <div
               style={{
@@ -67,14 +68,14 @@ export default function ReportsPage() {
             />
           </div>
 
-          <button className="btn btn-primary" style={{ width: '100%' }} onClick={downloadPayrollCSV}>
+          <button className="btn btn-primary justify-center" style={{ width: '100%' }} onClick={downloadPayrollCSV}>
             <Download size={16} />
             <span>Download Payroll CSV</span>
           </button>
         </div>
 
-        {/* Card 2: Advance Salary Ledger CSV */}
-        <div className="card" style={{ padding: '24px' }}>
+        {/* Card 2: Advance Salary & Loan Ledger CSV */}
+        <div className="card" style={{ padding: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
             <div
               style={{
@@ -91,30 +92,46 @@ export default function ReportsPage() {
               <FileSpreadsheet size={22} />
             </div>
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Advance Salary Ledger (CSV)</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Advances & Staff Loans (CSV)</h3>
               <p style={{ fontSize: '12px', color: '#64748b' }}>
-                Comprehensive ledger of all worker advances, payment modes, settlement progress, and unsettled balances.
+                Ledger of worker advances, staff loans with accrued interest, settlement progress, and balances.
               </p>
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Filter Records:</label>
-            <select
-              className="form-select"
-              style={{ width: '100%' }}
-              value={advanceFilter}
-              onChange={(e) => setAdvanceFilter(e.target.value)}
-            >
-              <option value="all">All Advances (Complete Ledger)</option>
-              <option value="unsettled">Unsettled Advances (Active Balances)</option>
-              <option value="settled">Settled Advances (Fully Deducted)</option>
-            </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label>Record Type:</label>
+              <select
+                className="form-select"
+                style={{ width: '100%' }}
+                value={advanceType}
+                onChange={(e) => setAdvanceType(e.target.value)}
+              >
+                <option value="all">All Records</option>
+                <option value="advance">Salary Advances</option>
+                <option value="loan">Staff Loans</option>
+              </select>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label>Status Filter:</label>
+              <select
+                className="form-select"
+                style={{ width: '100%' }}
+                value={advanceFilter}
+                onChange={(e) => setAdvanceFilter(e.target.value)}
+              >
+                <option value="all">All Statuses</option>
+                <option value="unsettled">Active / Unsettled</option>
+                <option value="settled">Settled (Fully Paid)</option>
+              </select>
+            </div>
           </div>
 
-          <button className="btn btn-amber" style={{ width: '100%' }} onClick={downloadAdvancesCSV}>
+          <button className="btn btn-amber justify-center" style={{ width: '100%' }} onClick={downloadAdvancesCSV}>
             <Download size={16} />
-            <span>Download Advances CSV</span>
+            <span>Download Ledger CSV</span>
           </button>
         </div>
       </div>
