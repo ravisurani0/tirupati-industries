@@ -136,7 +136,24 @@ export const payrollApi = {
   getSlip: (payrollId) => apiJson(`/api/payroll/slip/${payrollId}`)
 };
 
+export const expensesApi = {
+  getAll: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return apiJson(`/api/expenses${q ? '?' + q : ''}`);
+  },
+  getById: (id) => apiJson(`/api/expenses/${id}`),
+  getSummary: () => apiJson('/api/expenses/summary'),
+  create: (payload) => apiJson('/api/expenses', { method: 'POST', body: JSON.stringify(payload) }),
+  update: (id, payload) => apiJson(`/api/expenses/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+  delete: (id) => apiJson(`/api/expenses/${id}`, { method: 'DELETE' }),
+  getCsvUrl: (params = {}) => {
+    const q = new URLSearchParams(params).toString();
+    return `/api/export/expenses${q ? '?' + q : ''}`;
+  }
+};
+
 export const reportsApi = {
   getPayrollCsvUrl: (month) => `/api/export/payroll?month=${encodeURIComponent(month)}`,
-  getAdvancesCsvUrl: (status = 'all', type = 'all') => `/api/export/advances?status=${encodeURIComponent(status)}&type=${encodeURIComponent(type)}`
+  getAdvancesCsvUrl: (status = 'all', type = 'all') => `/api/export/advances?status=${encodeURIComponent(status)}&type=${encodeURIComponent(type)}`,
+  getExpensesCsvUrl: (month = '', category = 'all') => `/api/export/expenses?month=${encodeURIComponent(month)}&category=${encodeURIComponent(category)}`
 };

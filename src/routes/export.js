@@ -198,4 +198,70 @@ router.get('/advances', async (req, res) => {
   }
 });
 
+// GET /api/export/expenses?month=YYYY-MM&date=YYYY-MM-DD&category=xxx
+router.get('/expenses', async (req, res) => {
+  try {
+    const { month, date, category } = req.query;
+    let query = `
+      SELECT 
+        id,
+        title,
+        description,
+        amount,
+        TO_CHAR(date, 'YYYY-MM-DD') AS date,
+        time,
+        category,
+        payment_mode,
+        created_by,
+        created_at
+      FROM expenses
+      WHERE 1=1
+    `;
+    const params = [];
+    if (date) {
+      params.push(date);
+      query += ` AND date = $${params.length}`;
+    } else if (month) {
+      params.push(`${month}%`);
+      query += ` AND TO_CHAR(date, 'YYYY-MM') LIKE $${params.length}`;
+    }
+    if (category && category !== 'all') {
+      params.push(category);
+      query += ` AND LOWER(category) = LOWER($${params.length})`;
+    }
+    query += ` ORDER BY date DESC, time DESC, id DESC`;
+
+    const { rows } = await pool.query(query, params);
+
+    const headers = [
+      'Expense ID', 'Title', 'Category', 'Amount (₹)', 'Date', 'Time',
+      'Payment Mode', 'Description', 'Logged By', 'Timestamp'
+    ];
+
+    let csvContent = headers.join(',') + '\n';
+    for (const r of rows) {
+      const line = [
+        toCSVCell(r.id),
+        toCSVCell(r.title),
+        toCSVCell(r.category || 'General'),
+        toCSVCell(r.amount),
+        toCSVCell(r.date),
+        toCSVCell(r.time || ''),
+        toCSVCell(r.payment_mode || 'Cash'),
+        toCSVCell(r.description || ''),
+        toCSVCell(r.created_by || 'Admin'),
+        toCSVCell(r.created_at ? new Date(r.created_at).toISOString() : '')
+      ].join(',');
+      csvContent += line + '\n';
+    }
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=Tirupati_Expenses_Report.csv`);
+    res.send(csvContent);
+  } catch (err) {
+    console.error('Export expenses CSV error:', err);
+    res.status(500).json({ error: 'Failed to export expenses report.' });
+  }
+});
+
 module.exports = router;

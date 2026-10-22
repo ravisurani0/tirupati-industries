@@ -17,6 +17,7 @@ const advanceRoutes = require('./src/routes/advances');
 const payrollRoutes = require('./src/routes/payroll');
 const dashboardRoutes = require('./src/routes/dashboard');
 const exportRoutes = require('./src/routes/export');
+const expenseRoutes = require('./src/routes/expenses');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -80,6 +81,7 @@ app.use('/api/advances', advanceRoutes);
 app.use('/api/payroll', payrollRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/expenses', expenseRoutes);
 
 // Front-end SPA routing (serves React App for all browser navigation routes)
 app.get(/^(?!\/api(?:\/|$)).*/, (req, res, next) => {

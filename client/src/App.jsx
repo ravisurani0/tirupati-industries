@@ -9,6 +9,7 @@ import EmployeesPage from './pages/EmployeesPage';
 import AttendancePage from './pages/AttendancePage';
 import AdvancesPage from './pages/AdvancesPage';
 import PayrollPage from './pages/PayrollPage';
+import ExpensesPage from './pages/ExpensesPage';
 import ReportsPage from './pages/ReportsPage';
 import LoginPage from './pages/LoginPage';
 
@@ -54,6 +55,7 @@ export default function App() {
               <Route path="attendance" element={<AttendancePage />} />
               <Route path="advances" element={<AdvancesPage />} />
               <Route path="payroll" element={<PayrollPage />} />
+              <Route path="expenses" element={<ExpensesPage />} />
               <Route path="reports" element={<ReportsPage />} />
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Route>

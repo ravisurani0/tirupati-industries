@@ -142,3 +142,21 @@ CREATE INDEX IF NOT EXISTS idx_loan_repayments_advance ON loan_repayments(advanc
 CREATE INDEX IF NOT EXISTS idx_loan_repayments_date ON loan_repayments(repayment_date);
 CREATE INDEX IF NOT EXISTS idx_payroll_month ON payroll_records(month);
 CREATE INDEX IF NOT EXISTS idx_payroll_employee ON payroll_records(employee_id);
+
+-- 8. Daily Workshop Expenses Table
+CREATE TABLE IF NOT EXISTS expenses (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(200) NOT NULL,
+  description TEXT,
+  amount NUMERIC(12, 2) NOT NULL DEFAULT 0,
+  date DATE NOT NULL DEFAULT CURRENT_DATE,
+  time VARCHAR(10) DEFAULT TO_CHAR(CURRENT_TIMESTAMP, 'HH24:MI'),
+  category VARCHAR(100) DEFAULT 'General',
+  payment_mode VARCHAR(50) DEFAULT 'Cash',
+  created_by VARCHAR(100) DEFAULT 'Admin',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
+CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category);

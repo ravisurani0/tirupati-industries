@@ -11,12 +11,14 @@ import PaymentModal from './PaymentModal';
 import PayslipModal from './PayslipModal';
 import ProfileModal from './ProfileModal';
 import SettingsModal from './SettingsModal';
+import ExpenseModal from './ExpenseModal';
 import {
   LayoutDashboard,
   Users,
   CalendarCheck,
   HandCoins,
   Receipt,
+  Wallet,
   FileSpreadsheet,
   Settings,
   LogOut,
@@ -32,6 +34,7 @@ const routeTitles = {
   '/attendance': { title: 'Daily Attendance & Hours Log', sub: 'Track daily attendance, working days, and hourly shifts' },
   '/advances': { title: 'Advance Salary Management', sub: 'Worker advance disbursement and repayment ledger' },
   '/payroll': { title: 'Monthly Payroll & Remaining Salary', sub: 'Automated wage calculation, advance deductions & balance settlement' },
+  '/expenses': { title: 'Daily Workshop Expenses', sub: 'Petty cash, factory maintenance, tools, fuel & operational expenses' },
   '/reports': { title: 'Audit Reports & Exports', sub: 'Download workshop payroll summaries and advance ledgers' }
 };
 
@@ -121,6 +124,15 @@ export default function Layout() {
           >
             <Receipt size={18} />
             <span>Payroll & Salary</span>
+          </NavLink>
+
+          <NavLink
+            to="/expenses"
+            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+            onClick={closeDrawer}
+          >
+            <Wallet size={18} />
+            <span>Daily Expenses</span>
           </NavLink>
 
           <NavLink
@@ -252,6 +264,12 @@ export default function Layout() {
       )}
       {activeModal?.name === 'profile' && (
         <ProfileModal employeeId={activeModal.props?.employeeId} />
+      )}
+      {activeModal?.name === 'expense' && (
+        <ExpenseModal
+          expense={activeModal.props?.expense}
+          onSave={activeModal.props?.onSave}
+        />
       )}
       {activeModal?.name === 'settings' && <SettingsModal />}
     </div>

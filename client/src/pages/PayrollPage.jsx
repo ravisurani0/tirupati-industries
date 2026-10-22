@@ -2,7 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { payrollApi, formatCurrency } from '../api';
 import { useApp } from '../context/AppContext';
 import StatusBadge from '../components/StatusBadge';
-import { Calculator, Save, Download, FileText, LayoutGrid, List } from 'lucide-react';
+import DataTable from '../components/DataTable';
+import { Calculator, Save, Download, FileText } from 'lucide-react';
 
 export default function PayrollPage() {
   const { openModal, showToast } = useApp();
@@ -20,7 +21,6 @@ export default function PayrollPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [viewMode, setViewMode] = useState('auto'); // 'auto', 'cards', 'table'
 
   const fetchPayroll = useCallback(async (targetMonth) => {
     try {
@@ -46,10 +46,12 @@ export default function PayrollPage() {
     fetchPayroll(month);
   }, [month, fetchPayroll]);
 
-  // Live row recalculation for inline advance deduction and bonus inputs
-  const handleRowChange = (idx, field, rawVal) => {
+  // Live row recalculation for inline advance deduction and bonus inputs keyed by employee_id
+  const handleRowChange = (empId, field, rawVal) => {
     const val = parseFloat(rawVal) || 0;
     setPayrollRows((prev) => {
+      const idx = prev.findIndex((r) => r.employee_id === empId);
+      if (idx === -1) return prev;
       const updated = [...prev];
       const item = { ...updated[idx], [field]: val };
 
@@ -102,10 +104,314 @@ export default function PayrollPage() {
     window.location.href = `/api/export/payroll?month=${encodeURIComponent(month)}`;
   };
 
+  // DataTable column definitions
+  const columns = [
+    {
+      key: 'name',
+      label: 'Staff Member',
+      sortable: true,
+      render: (p) => {
+        const isFixed = p.employment_type === 'fixed';
+        const rateDisplay = isFixed
+          ? `${formatCurrency(p.base_rate)}/mo`
+          : `${formatCurrency(p.base_rate)}/hr`;
+
+        return (
+          <div>
+            <div className="font-bold text-slate-900">{p.name}</div>
+            <div className="text-xs text-slate-500">
+              {p.designation} • {rateDisplay}
+            </div>
+          </div>
+        );
+      }
+    },
+    {
+      key: 'gross_salary',
+      label: 'Units & Gross',
+      sortable: true,
+      sortValue: (p) => parseFloat(p.gross_salary) || 0,
+      render: (p) => {
+        const isFixed = p.employment_type === 'fixed';
+        const workUnitDisplay = isFixed
+          ? `${p.effective_working_days}/${p.month_total_days} Days`
+          : `${p.total_hours_worked} Hours`;
+
+        return (
+          <div>
+            <div className="font-semibold text-xs text-slate-800">{workUnitDisplay}</div>
+            <div className="text-xs text-slate-500">Gross: {formatCurrency(p.gross_salary)}</div>
+          </div>
+        );
+      }
+    },
+    {
+      key: 'advance_deduction',
+      label: 'Advance Deduct',
+      sortable: true,
+      sortValue: (p) => parseFloat(p.advance_deduction) || 0,
+      render: (p) => (
+        <input
+          type="number"
+          step="any"
+          className="form-control"
+          style={{ width: '90px', fontWeight: 600, color: '#d97706', fontSize: '12px', padding: '4px 6px' }}
+          value={p.advance_deduction}
+          min="0"
+          max={p.available_advance + p.advance_deduction}
+          title={`Available advance balance: ${formatCurrency(p.available_advance)}`}
+          onChange={(e) => handleRowChange(p.employee_id, 'advance_deduction', e.target.value)}
+        />
+      )
+    },
+    {
+      key: 'bonus_allowance',
+      label: 'Incentive / Bonus',
+      sortable: true,
+      sortValue: (p) => parseFloat(p.bonus_allowance) || 0,
+      render: (p) => (
+        <input
+          type="number"
+          step="any"
+          className="form-control"
+          style={{ width: '80px', color: '#2563eb', fontSize: '12px', padding: '4px 6px' }}
+          value={p.bonus_allowance || 0}
+          min="0"
+          onChange={(e) => handleRowChange(p.employee_id, 'bonus_allowance', e.target.value)}
+        />
+      )
+    },
+    {
+      key: 'net_salary',
+      label: 'Net Payable',
+      sortable: true,
+      sortValue: (p) => parseFloat(p.net_salary) || 0,
+      render: (p) => (
+        <strong className="text-emerald-600 font-bold text-sm">
+          {formatCurrency(p.net_salary)}
+        </strong>
+      )
+    },
+    {
+      key: 'paid_amount',
+      label: 'Disbursed',
+      sortable: true,
+      sortValue: (p) => parseFloat(p.paid_amount) || 0,
+      render: (p) => formatCurrency(p.paid_amount)
+    },
+    {
+      key: 'remaining_salary',
+      label: 'Remaining',
+      sortable: true,
+      sortValue: (p) => parseFloat(p.remaining_salary) || 0,
+      render: (p) => (
+        <strong
+          className={`font-bold text-sm ${p.remaining_salary > 0 ? 'text-red-600' : 'text-emerald-600'}`}
+        >
+          {formatCurrency(p.remaining_salary)}
+        </strong>
+      )
+    },
+    {
+      key: 'payment_status',
+      label: 'Status',
+      sortable: true,
+      render: (p) => <StatusBadge status={p.payment_status} />
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      align: 'right',
+      render: (p) => (
+        <div className="inline-flex items-center gap-1.5">
+          {p.remaining_salary > 0 ? (
+            <button
+              type="button"
+              className="btn btn-success btn-sm"
+              onClick={() => {
+                if (!p.id) {
+                  alert(
+                    'Please tap "Save & Lock Payroll" above first to register database records before disbursing payment.'
+                  );
+                  return;
+                }
+                openModal('payment', { item: p, month, onSave: () => fetchPayroll(month) });
+              }}
+            >
+              Pay
+            </button>
+          ) : (
+            <span className="badge badge-success text-[10px] px-1.5 py-0.5">Paid</span>
+          )}
+
+          {p.id ? (
+            <button
+              type="button"
+              className="btn btn-outline btn-sm text-slate-700"
+              onClick={() => openModal('slip', { payrollId: p.id })}
+              title="Print Payslip Voucher"
+            >
+              <FileText size={13} />
+              <span>Slip</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-outline btn-sm opacity-50"
+              onClick={() => showToast('Save payroll first to generate permanent slips', 'error')}
+              title="Save payroll first"
+            >
+              <FileText size={13} />
+              <span>Slip</span>
+            </button>
+          )}
+        </div>
+      )
+    }
+  ];
+
+  // Mobile Card Renderer
+  const renderCard = (p) => {
+    const isFixed = p.employment_type === 'fixed';
+    const rateDisplay = isFixed
+      ? `${formatCurrency(p.base_rate)}/mo`
+      : `${formatCurrency(p.base_rate)}/hr`;
+
+    const workUnitDisplay = isFixed
+      ? `${p.effective_working_days} / ${p.month_total_days} Days`
+      : `${p.total_hours_worked} Hours`;
+
+    return (
+      <div className="payroll-mobile-card" key={`payroll_card_${p.employee_id}`}>
+        <div className="wmc-header">
+          <div>
+            <div style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{p.name}</div>
+            <div style={{ fontSize: '12px', color: '#64748b' }}>
+              {p.designation} • {rateDisplay}
+            </div>
+          </div>
+          <StatusBadge status={p.payment_status} />
+        </div>
+
+        <div className="payroll-card-amounts">
+          <div className="wmc-stat-item">
+            <span className="wmc-stat-label">Units / Gross</span>
+            <span className="wmc-stat-val">
+              {workUnitDisplay} • <strong style={{ color: '#0f172a' }}>{formatCurrency(p.gross_salary)}</strong>
+            </span>
+          </div>
+          <div className="wmc-stat-item">
+            <span className="wmc-stat-label">Net Payable</span>
+            <span className="wmc-stat-val" style={{ color: '#059669', fontSize: '15px' }}>
+              {formatCurrency(p.net_salary)}
+            </span>
+          </div>
+          <div className="wmc-stat-item">
+            <span className="wmc-stat-label">Already Disbursed</span>
+            <span className="wmc-stat-val">{formatCurrency(p.paid_amount)}</span>
+          </div>
+          <div className="wmc-stat-item">
+            <span className="wmc-stat-label">Remaining Balance</span>
+            <span
+              className="wmc-stat-val"
+              style={{
+                color: p.remaining_salary > 0 ? '#dc2626' : '#059669',
+                fontSize: '15px'
+              }}
+            >
+              {formatCurrency(p.remaining_salary)}
+            </span>
+          </div>
+        </div>
+
+        <div className="payroll-card-inputs">
+          <div className="att-input-box">
+            <label>
+              Advance Deduct{' '}
+              {p.available_advance > 0 && (
+                <span style={{ color: '#d97706', fontSize: '10px' }}>(Max: {formatCurrency(p.available_advance)})</span>
+              )}
+            </label>
+            <input
+              type="number"
+              step="any"
+              className="form-control"
+              style={{ fontWeight: 600, color: '#d97706' }}
+              value={p.advance_deduction}
+              min="0"
+              max={p.available_advance + p.advance_deduction}
+              onChange={(e) => handleRowChange(p.employee_id, 'advance_deduction', e.target.value)}
+            />
+          </div>
+          <div className="att-input-box">
+            <label>Bonus / Incentive</label>
+            <input
+              type="number"
+              step="any"
+              className="form-control"
+              style={{ color: '#2563eb' }}
+              value={p.bonus_allowance || 0}
+              min="0"
+              onChange={(e) => handleRowChange(p.employee_id, 'bonus_allowance', e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="wmc-actions">
+          {p.remaining_salary > 0 ? (
+            <button
+              type="button"
+              className="btn btn-success btn-sm"
+              onClick={() => {
+                if (!p.id) {
+                  alert(
+                    'Please tap "Save & Lock Payroll" above first to register database records before disbursing payment.'
+                  );
+                  return;
+                }
+                openModal('payment', { item: p, month, onSave: () => fetchPayroll(month) });
+              }}
+            >
+              Pay Now ({formatCurrency(p.remaining_salary)})
+            </button>
+          ) : (
+            <span className="badge badge-success" style={{ padding: '8px 12px', flex: 1, textAlign: 'center' }}>
+              Fully Settled
+            </span>
+          )}
+
+          {p.id ? (
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              style={{ flex: '0 0 auto' }}
+              onClick={() => openModal('slip', { payrollId: p.id })}
+              title="Print Payslip Voucher"
+            >
+              <FileText size={14} />
+              <span>Slip</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              style={{ flex: '0 0 auto' }}
+              onClick={() => showToast('Save payroll first to generate permanent slips', 'error')}
+            >
+              <FileText size={14} />
+              <span>Slip</span>
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div>
       {/* Month Selector & Controls */}
-      <div className="action-banner flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+      <div className="action-banner flex flex-col xl:flex-row xl:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 flex-wrap min-w-0">
           <div className="flex items-center gap-2">
             <span style={{ fontSize: '13px', fontWeight: 700 }}>Settlement Month:</span>
@@ -120,15 +426,25 @@ export default function PayrollPage() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap shrink-0">
-          <button className="btn btn-outline btn-sm flex-1 sm:flex-initial justify-center" onClick={() => fetchPayroll(month)}>
+          <button
+            className="btn btn-outline btn-sm flex-1 sm:flex-initial justify-center"
+            onClick={() => fetchPayroll(month)}
+          >
             <Calculator size={15} />
             <span>Recalculate</span>
           </button>
-          <button className="btn btn-outline btn-sm flex-1 sm:flex-initial justify-center" onClick={handleExportCSV}>
+          <button
+            className="btn btn-outline btn-sm flex-1 sm:flex-initial justify-center"
+            onClick={handleExportCSV}
+          >
             <Download size={15} />
             <span>Export CSV</span>
           </button>
-          <button className="btn btn-success btn-sm flex-1 sm:flex-initial justify-center" onClick={handleSaveAll} disabled={saving}>
+          <button
+            className="btn btn-success btn-sm flex-1 sm:flex-initial justify-center"
+            onClick={handleSaveAll}
+            disabled={saving}
+          >
             <Save size={15} />
             <span>{saving ? 'Saving...' : 'Save & Lock Payroll'}</span>
           </button>
@@ -146,7 +462,16 @@ export default function PayrollPage() {
           marginBottom: '20px'
         }}
       >
-        <div style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '12px' }}>
+        <div
+          style={{
+            fontSize: '12px',
+            fontWeight: 700,
+            color: '#94a3b8',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            marginBottom: '12px'
+          }}
+        >
           Monthly Payroll Summary • {month}
         </div>
         <div className="payroll-summary-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
@@ -191,329 +516,31 @@ export default function PayrollPage() {
         </div>
       </div>
 
-      {/* Payroll Sheet Card */}
+      {/* Payroll Sheet DataTable Card */}
       <div className="card">
-        <div className="card-header flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3>Workshop Payroll Sheet</h3>
-          <div className="view-toggle self-end sm:self-auto">
-            <button
-              type="button"
-              className={`view-toggle-btn ${viewMode === 'cards' ? 'active' : ''}`}
-              onClick={() => setViewMode(viewMode === 'cards' ? 'auto' : 'cards')}
-              title="Cards View"
-            >
-              <LayoutGrid size={13} />
-              <span>Cards</span>
-            </button>
-            <button
-              type="button"
-              className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
-              onClick={() => setViewMode(viewMode === 'table' ? 'auto' : 'table')}
-              title="Table View"
-            >
-              <List size={13} />
-              <span>Table</span>
-            </button>
+        <div className="card-header flex items-center justify-between">
+          <div>
+            <h3>Workshop Payroll Sheet ({payrollRows.length} Staff)</h3>
+            <span className="text-xs text-slate-500">
+              Interactive monthly payroll calculator with inline advance deductions and bonuses
+            </span>
           </div>
         </div>
 
-        {/* Mobile Payroll Cards View - ONLY visible on mobile screens unless explicitly toggled to cards */}
-        <div className={`mobile-cards-list ${viewMode === 'cards' ? 'force-cards' : viewMode === 'table' ? 'hidden' : ''}`}>
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
-              Calculating payroll for {month}...
-            </div>
-          ) : payrollRows.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
-              No staff records found for {month}.
-            </div>
-          ) : (
-            payrollRows.map((p, idx) => {
-              const isFixed = p.employment_type === 'fixed';
-              const rateDisplay = isFixed
-                ? `${formatCurrency(p.base_rate)}/mo`
-                : `${formatCurrency(p.base_rate)}/hr`;
-
-              const workUnitDisplay = isFixed
-                ? `${p.effective_working_days} / ${p.month_total_days} Days`
-                : `${p.total_hours_worked} Hours`;
-
-              return (
-                <div className="payroll-mobile-card" key={`payroll_card_${p.employee_id}`}>
-                  <div className="wmc-header">
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: '15px', color: '#0f172a' }}>{p.name}</div>
-                      <div style={{ fontSize: '12px', color: '#64748b' }}>
-                        {p.designation} • {rateDisplay}
-                      </div>
-                    </div>
-                    <StatusBadge status={p.payment_status} />
-                  </div>
-
-                  <div className="payroll-card-amounts">
-                    <div className="wmc-stat-item">
-                      <span className="wmc-stat-label">Units / Gross</span>
-                      <span className="wmc-stat-val">
-                        {workUnitDisplay} • <strong style={{ color: '#0f172a' }}>{formatCurrency(p.gross_salary)}</strong>
-                      </span>
-                    </div>
-                    <div className="wmc-stat-item">
-                      <span className="wmc-stat-label">Net Payable</span>
-                      <span className="wmc-stat-val" style={{ color: '#059669', fontSize: '15px' }}>
-                        {formatCurrency(p.net_salary)}
-                      </span>
-                    </div>
-                    <div className="wmc-stat-item">
-                      <span className="wmc-stat-label">Already Disbursed</span>
-                      <span className="wmc-stat-val">{formatCurrency(p.paid_amount)}</span>
-                    </div>
-                    <div className="wmc-stat-item">
-                      <span className="wmc-stat-label">Remaining Balance</span>
-                      <span
-                        className="wmc-stat-val"
-                        style={{
-                          color: p.remaining_salary > 0 ? '#dc2626' : '#059669',
-                          fontSize: '15px'
-                        }}
-                      >
-                        {formatCurrency(p.remaining_salary)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="payroll-card-inputs">
-                    <div className="att-input-box">
-                      <label>
-                        Advance Deduct{' '}
-                        {p.available_advance > 0 && (
-                          <span style={{ color: '#d97706', fontSize: '10px' }}>(Max: {formatCurrency(p.available_advance)})</span>
-                        )}
-                      </label>
-                      <input
-                        type="number"
-                        step="any"
-                        className="form-control"
-                        style={{ fontWeight: 600, color: '#d97706' }}
-                        value={p.advance_deduction}
-                        min="0"
-                        max={p.available_advance + p.advance_deduction}
-                        onChange={(e) => handleRowChange(idx, 'advance_deduction', e.target.value)}
-                      />
-                    </div>
-                    <div className="att-input-box">
-                      <label>Bonus / Incentive</label>
-                      <input
-                        type="number"
-                        step="any"
-                        className="form-control"
-                        style={{ color: '#2563eb' }}
-                        value={p.bonus_allowance || 0}
-                        min="0"
-                        onChange={(e) => handleRowChange(idx, 'bonus_allowance', e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="wmc-actions">
-                    {p.remaining_salary > 0 ? (
-                      <button
-                        type="button"
-                        className="btn btn-success btn-sm"
-                        onClick={() => {
-                          if (!p.id) {
-                            alert(
-                              'Please tap "Save & Lock Payroll" above first to register database records before disbursing payment.'
-                            );
-                            return;
-                          }
-                          openModal('payment', { item: p, month, onSave: () => fetchPayroll(month) });
-                        }}
-                      >
-                        Pay Now ({formatCurrency(p.remaining_salary)})
-                      </button>
-                    ) : (
-                      <span className="badge badge-success" style={{ padding: '8px 12px', flex: 1, textAlign: 'center' }}>
-                        Fully Settled
-                      </span>
-                    )}
-
-                    {p.id ? (
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-sm"
-                        style={{ flex: '0 0 auto' }}
-                        onClick={() => openModal('slip', { payrollId: p.id })}
-                        title="Print Payslip Voucher"
-                      >
-                        <FileText size={14} />
-                        <span>Slip</span>
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="btn btn-outline btn-sm"
-                        style={{ flex: '0 0 auto' }}
-                        onClick={() => showToast('Save payroll first to generate permanent slips', 'error')}
-                      >
-                        <FileText size={14} />
-                        <span>Slip</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-
-        {/* Desktop Table View - ONLY visible on md and up unless explicitly toggled to table */}
-        <div className={`table-responsive ${viewMode === 'cards' ? 'force-hidden' : viewMode === 'table' ? 'force-table' : 'hidden md:block'}`}>
-          <table className="app-table">
-            <thead>
-              <tr>
-                <th>Staff Member</th>
-                <th>Units & Gross</th>
-                <th>Advance Deduct</th>
-                <th>Incentive / Bonus</th>
-                <th>Net Payable</th>
-                <th>Disbursed</th>
-                <th>Remaining</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
-                    Calculating payroll for {month}...
-                  </td>
-                </tr>
-              ) : payrollRows.length === 0 ? (
-                <tr>
-                  <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
-                    No staff records found for {month}.
-                  </td>
-                </tr>
-              ) : (
-                payrollRows.map((p, idx) => {
-                  const isFixed = p.employment_type === 'fixed';
-                  const rateDisplay = isFixed
-                    ? `${formatCurrency(p.base_rate)}/mo`
-                    : `${formatCurrency(p.base_rate)}/hr`;
-
-                  const workUnitDisplay = isFixed
-                    ? `${p.effective_working_days}/${p.month_total_days} Days`
-                    : `${p.total_hours_worked} Hours`;
-
-                  return (
-                    <tr key={p.employee_id}>
-                      <td>
-                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{p.name}</div>
-                        <div style={{ fontSize: '11px', color: '#64748b' }}>
-                          {p.designation} • {rateDisplay}
-                        </div>
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: 600, fontSize: '12.5px' }}>{workUnitDisplay}</div>
-                        <div style={{ fontSize: '11px', color: '#475569' }}>
-                          Gross: {formatCurrency(p.gross_salary)}
-                        </div>
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          step="any"
-                          className="form-control"
-                          style={{ width: '90px', fontWeight: 600, color: '#d97706', fontSize: '12px', padding: '4px 6px' }}
-                          value={p.advance_deduction}
-                          min="0"
-                          max={p.available_advance + p.advance_deduction}
-                          title={`Available advance balance: ${formatCurrency(p.available_advance)}`}
-                          onChange={(e) => handleRowChange(idx, 'advance_deduction', e.target.value)}
-                        />
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          step="any"
-                          className="form-control"
-                          style={{ width: '80px', color: '#2563eb', fontSize: '12px', padding: '4px 6px' }}
-                          value={p.bonus_allowance || 0}
-                          min="0"
-                          onChange={(e) => handleRowChange(idx, 'bonus_allowance', e.target.value)}
-                        />
-                      </td>
-                      <td>
-                        <strong style={{ fontSize: '13.5px', color: '#059669' }}>
-                          {formatCurrency(p.net_salary)}
-                        </strong>
-                      </td>
-                      <td>{formatCurrency(p.paid_amount)}</td>
-                      <td>
-                        <strong
-                          style={{
-                            fontSize: '13.5px',
-                            color: p.remaining_salary > 0 ? '#dc2626' : '#059669'
-                          }}
-                        >
-                          {formatCurrency(p.remaining_salary)}
-                        </strong>
-                      </td>
-                      <td>
-                        <StatusBadge status={p.payment_status} />
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '6px' }}>
-                          {p.remaining_salary > 0 ? (
-                            <button
-                              className="btn btn-success btn-sm"
-                              onClick={() => {
-                                if (!p.id) {
-                                  alert(
-                                    'Please click "Save & Lock Payroll" first to register database records before disbursing payment.'
-                                  );
-                                  return;
-                                }
-                                openModal('payment', { item: p, month, onSave: () => fetchPayroll(month) });
-                              }}
-                              title="Disburse Payment"
-                            >
-                              Pay Now
-                            </button>
-                          ) : (
-                            <span className="badge badge-success" style={{ padding: '6px 8px' }}>
-                              Settled
-                            </span>
-                          )}
-
-                          {p.id ? (
-                            <button
-                              className="btn btn-outline btn-sm"
-                              onClick={() => openModal('slip', { payrollId: p.id })}
-                              title="Print Payslip Voucher"
-                            >
-                              <FileText size={13} />
-                              <span>Slip</span>
-                            </button>
-                          ) : (
-                            <button
-                              className="btn btn-outline btn-sm"
-                              onClick={() => showToast('Save payroll first to generate permanent slips', 'error')}
-                              title="Save payroll first"
-                            >
-                              <FileText size={13} />
-                              <span>Slip</span>
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+        <div className="p-3 sm:p-4">
+          <DataTable
+            data={payrollRows}
+            columns={columns}
+            loading={loading}
+            searchable={true}
+            searchPlaceholder="Search staff by name or role..."
+            pagination={true}
+            pageSize={15}
+            pageSizeOptions={[10, 15, 25, 50]}
+            initialSort={{ key: 'name', direction: 'asc' }}
+            renderCard={renderCard}
+            emptyMessage={`No staff records found for ${month}.`}
+          />
         </div>
       </div>
     </div>
