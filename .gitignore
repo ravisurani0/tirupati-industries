@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.local
+frontend/dist/
+backend/database/*.sqlite
+backend/database/*.sqlite-journal
+backend/uploads/profile/*
+!backend/uploads/profile/.gitkeep
+backend/uploads/bills/*
+!backend/uploads/bills/.gitkeep
+.DS_Store
+npm-debug.log*

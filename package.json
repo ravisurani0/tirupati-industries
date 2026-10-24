@@ -1,45 +1,52 @@
 {
-  "name": "tirupati.industries.rajkot",
+  "name": "ems",
   "version": "1.0.0",
-  "description": "Tirupati Industries Rajkot - Workshop Employee, Salary, Leave & Advance Management System",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "dev:ui": "vite",
-    "build": "vite build",
-    "migrate": "node src/db/migrate.js",
-    "seed": "node src/db/seed.js",
-    "clean": "node src/db/clean.js",
-    "test": "echo \"Error: no test specified\" && exit 0"
+  "private": true,
+  "description": "EMS - Employee Management System (React app + Node API on one port)",
+  "type": "commonjs",
+  "main": "backend/src/server.js",
+  "engines": {
+    "node": ">=20.19"
   },
-  "keywords": [
-    "workshop-management",
-    "payroll",
-    "salary-calculation",
-    "advance-salary",
-    "attendance",
-    "rajkot-industries"
-  ],
-  "author": "Tirupati Industries",
-  "license": "ISC",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "npm run build && node backend/src/server.js --prod",
+    "serve": "node backend/src/server.js --prod",
+    "build": "vite build --config frontend/vite.config.mjs",
+    "migrate": "knex --knexfile backend/knexfile.js migrate:latest",
+    "migrate:rollback": "knex --knexfile backend/knexfile.js migrate:rollback",
+    "migrate:status": "knex --knexfile backend/knexfile.js migrate:status",
+    "migrate:make": "knex --knexfile backend/knexfile.js migrate:make",
+    "seed": "knex --knexfile backend/knexfile.js seed:run",
+    "seed:make": "knex --knexfile backend/knexfile.js seed:make",
+    "setup": "npm run migrate && npm run seed",
+    "db:reset": "knex --knexfile backend/knexfile.js migrate:rollback --all && npm run setup",
+    "attendance:daily": "node backend/src/jobs/run-daily-attendance.js"
+  },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "lucide-react": "^1.59.0",
-    "pg": "^8.19.0",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1",
-    "react-router-dom": "^7.18.4"
+    "bcryptjs": "^3.0.2",
+    "better-sqlite3": "^12.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.1",
+    "mysql2": "^3.14.1",
+    "pg": "^8.16.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@vitejs/plugin-react": "^6.1.2",
-    "tailwindcss": "^4.3.3",
-    "vite": "^8.3.4"
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/vite": "^4.1.10",
+    "@vitejs/plugin-react": "^4.5.2",
+    "nodemon": "^3.1.10",
+    "tailwindcss": "^4.1.10",
+    "vite": "^6.3.5"
   }
 }

@@ -1,0 +1,7 @@
+{
+  "watch": ["backend/src", "backend/knexfile.js", ".env", "backend/.env"],
+  "ignore": ["backend/uploads/**", "frontend/**"],
+  "ext": "js,json",
+  "exec": "node backend/src/server.js",
+  "signal": "SIGTERM"
+}
