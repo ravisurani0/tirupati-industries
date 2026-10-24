@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SidebarProvider, useSidebar } from '../context/SidebarContext';
 import Sidebar from '../components/layout/Sidebar';
@@ -14,7 +15,15 @@ function Shell() {
         <Header />
         <main>
           <div className="mx-auto max-w-(--breakpoint-2xl) p-4 pb-20 md:p-6 md:pb-6">
-            <Outlet />
+            <Suspense
+              fallback={
+                <div className="flex min-h-[50vh] items-center justify-center">
+                  <div className="border-brand-500 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent" />
+                </div>
+              }
+            >
+              <Outlet />
+            </Suspense>
           </div>
         </main>
       </div>

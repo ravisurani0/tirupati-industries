@@ -1,39 +1,49 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { GuestRoute, ProtectedRoute, RoleRoute } from './routes/guards';
 import AppLayout from './layouts/AppLayout';
-import SignIn from './pages/auth/SignIn';
-import SignUp from './pages/auth/SignUp';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import UsersList from './pages/users/UsersList';
-import UserForm from './pages/users/UserForm';
-import Roles from './pages/roles/Roles';
-import EmployeesList from './pages/employees/EmployeesList';
-import EmployeeForm from './pages/employees/EmployeeForm';
-import EmployeeDetail from './pages/employees/EmployeeDetail';
-import AttendancePage from './pages/attendance/AttendancePage';
-import AttendanceForm from './pages/attendance/AttendanceForm';
-import AccountsList from './pages/accounts/AccountsList';
-import AccountForm from './pages/accounts/AccountForm';
-import AccountDetail from './pages/accounts/AccountDetail';
-import ExpensesList from './pages/expenses/ExpensesList';
-import ExpenseForm from './pages/expenses/ExpenseForm';
-import CategoriesList from './pages/categories/CategoriesList';
-import CategoryForm from './pages/categories/CategoryForm';
-import AdvancesList from './pages/advances/AdvancesList';
-import AdvanceForm from './pages/advances/AdvanceForm';
-import AdvanceDetail from './pages/advances/AdvanceDetail';
-import PayrollList from './pages/payroll/PayrollList';
-import PayrollDetail from './pages/payroll/PayrollDetail';
-import NotFound from './pages/NotFound';
+const SignIn = lazy(() => import('./pages/auth/SignIn'));
+const SignUp = lazy(() => import('./pages/auth/SignUp'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Profile = lazy(() => import('./pages/Profile'));
+const UsersList = lazy(() => import('./pages/users/UsersList'));
+const UserForm = lazy(() => import('./pages/users/UserForm'));
+const Roles = lazy(() => import('./pages/roles/Roles'));
+const EmployeesList = lazy(() => import('./pages/employees/EmployeesList'));
+const EmployeeForm = lazy(() => import('./pages/employees/EmployeeForm'));
+const EmployeeDetail = lazy(() => import('./pages/employees/EmployeeDetail'));
+const AttendancePage = lazy(() => import('./pages/attendance/AttendancePage'));
+const AttendanceForm = lazy(() => import('./pages/attendance/AttendanceForm'));
+const AccountsList = lazy(() => import('./pages/accounts/AccountsList'));
+const AccountForm = lazy(() => import('./pages/accounts/AccountForm'));
+const AccountDetail = lazy(() => import('./pages/accounts/AccountDetail'));
+const ExpensesList = lazy(() => import('./pages/expenses/ExpensesList'));
+const ExpenseForm = lazy(() => import('./pages/expenses/ExpenseForm'));
+const CategoriesList = lazy(() => import('./pages/categories/CategoriesList'));
+const CategoryForm = lazy(() => import('./pages/categories/CategoryForm'));
+const AdvancesList = lazy(() => import('./pages/advances/AdvancesList'));
+const AdvanceForm = lazy(() => import('./pages/advances/AdvanceForm'));
+const AdvanceDetail = lazy(() => import('./pages/advances/AdvanceDetail'));
+const PayrollList = lazy(() => import('./pages/payroll/PayrollList'));
+const PayrollDetail = lazy(() => import('./pages/payroll/PayrollDetail'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+
+function PageLoader() {
+  return (
+    <div className="flex min-h-[50vh] items-center justify-center">
+      <div className="border-brand-500 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent" />
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route element={<GuestRoute />}>
               <Route path="/signin" element={<SignIn />} />
@@ -82,6 +92,7 @@ export default function App() {
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </Suspense>
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
